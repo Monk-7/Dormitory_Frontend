@@ -1,0 +1,90 @@
+[
+    {
+      "idMeter": "423428b6-fe62-466b-9ac1-3bf589c01fc2",
+      "idDormitory": "66856fb4-8ca7-4462-9daf-7646fa0b4537",
+      "buildingName": "A",
+      "meterRoomAll": [
+        {
+          "idMeterRoom": "1bcbbfd5-33b4-45da-b20b-42a0b4afdbd4",
+          "idRoom": "e8a9a633-d6c7-4980-a717-291da3ddcf99",
+          "roomName": 101,
+          "electricity": 40,
+          "water": null,
+          "electricityPrev": 70,
+          "waterPrev": null
+        },
+        {
+          "idMeterRoom": "931e4b7f-bbf8-4168-837e-bd7ce2aac66f",
+          "idRoom": "e7bcee28-7599-41e9-aab6-7a58da538457",
+          "roomName": 102,
+          "electricity": 45,
+          "water": null,
+          "electricityPrev": 75,
+          "waterPrev": null
+        },
+        {
+          "idMeterRoom": "df3f6ee2-11ff-4d97-bbb0-93f36c1dccb8",
+          "idRoom": "da863fc8-3009-4932-a700-6694631eb4c1",
+          "roomName": 201,
+          "electricity": 50,
+          "water": null,
+          "electricityPrev": 80,
+          "waterPrev": null
+        },
+        {
+          "idMeterRoom": "41571b0d-b207-4ed4-bef1-8498c4e727ce",
+          "idRoom": "24b2882e-ee4a-49ea-806d-08e16363b2ba",
+          "roomName": 202,
+          "electricity": 55,
+          "water": null,
+          "electricityPrev": 85,
+          "waterPrev": null
+        }
+      ],
+      "timesTamp": "2024-01-28T06:52:55.118037+00:00"
+    },
+    {
+      "idMeter": "ee7ae25d-e3f9-497e-a736-1561d3ea6a70",
+      "idDormitory": "66856fb4-8ca7-4462-9daf-7646fa0b4537",
+      "buildingName": "B",
+      "meterRoomAll": [
+        {
+          "idMeterRoom": "863bc6b7-78ee-4f7f-8fb7-fe37231433a3",
+          "idRoom": "fcbea651-126d-4061-a23c-ecf521927255",
+          "roomName": 101,
+          "electricity": 75,
+          "water": null,
+          "electricityPrev": 50,
+          "waterPrev": null
+        },
+        {
+          "idMeterRoom": "e5ca4760-cca2-4911-8d0d-655f37fe43dc",
+          "idRoom": "244bc16b-4507-43f1-b2a5-7d85c33381f1",
+          "roomName": 102,
+          "electricity": 80,
+          "water": null,
+          "electricityPrev": 55,
+          "waterPrev": null
+        },
+        {
+          "idMeterRoom": "4dbbf69f-d27e-40ad-b753-d3836528da91",
+          "idRoom": "00cd538f-bbd2-47c8-8c32-2679bec000f9",
+          "roomName": 201,
+          "electricity": 90,
+          "water": null,
+          "electricityPrev": 45,
+          "waterPrev": null
+        },
+        {
+          "idMeterRoom": "0e48d703-a365-4bd0-ae2b-51f727534421",
+          "idRoom": "0a8b0e47-7f44-466e-9ac9-a8dc2b4f1d92",
+          "roomName": 202,
+          "electricity": 85,
+          "water": null,
+          "electricityPrev": 50,
+          "waterPrev": null
+        }
+      ],
+      "timesTamp": "2024-01-28T08:10:36.843843+00:00"
+    }
+  ]
