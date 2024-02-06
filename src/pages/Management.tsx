@@ -36,6 +36,7 @@ import PaymentHistory from "../components/PaymentHistory";
 import Report from "../components/Report";
 
 import apiClient from "../services/apiClient";
+import configAPI from "../services/configAPI.json";
 import { getUserId } from "../services/userService";
 
 import jsonData from "../jsonTest/Building.json";
@@ -99,15 +100,33 @@ function Icon({ id, open }: any) {
   );
 }
 
-interface roomInterface {
+interface roomStatusInterface {
   idRoom: string;
-  idBuilding: string;
   roomName: string;
-  roomPrice: number;
-  furniturePrice: number;
-  internetPrice: number;
-  parkingPrice: number;
+  isRoomStay: boolean;
+  isRoomPay: boolean;
+  isRoomLatePay: boolean;
+}
+
+interface buildingInfoInterface {
+  idBuilding: string;
+  idDormitory: string;
+  buildingName: string;
+  waterPrice: number;
+  electricalPrice: number;
   timesTamp: Date;
+  roomInfo: roomStatusInterface[];
+}
+
+interface dormitoryInfoInterface {
+  idDormitory: string;
+  idOwner: string;
+  dormitoryName: string;
+  address: string;
+  phoneNumber: string;
+  email: string;
+  timesTamp: Date;
+  buildingInfo: buildingInfoInterface[];
 }
 
 interface buildingInterface {
@@ -117,7 +136,6 @@ interface buildingInterface {
   waterPrice: number;
   electricalPrice: number;
   timesTamp: Date;
-  roomAll: [roomInterface];
 }
 
 interface dormitoryInterface {
@@ -128,12 +146,17 @@ interface dormitoryInterface {
   phoneNumber: string;
   email: string;
   timesTamp: Date;
-  buildingAll: [buildingInterface];
 }
 
+
 export default function Management() {
-  const [roomData, setRoomData] = useState<dormitoryInterface>();
+
   const [accordionStates, setAccordionStates] = useState<boolean[]>([]);
+  const [dormitoryData, setDormitoryData] = useState<dormitoryInfoInterface[]>([]);
+  const [dormitoryAPI, setDormitoryAPI] = useState<dormitoryInterface[]>([]);
+  const [idDormitory,setIdDormitory] = useState<string>();
+  const [roomName,setRoomName] = useState<string>('NO DATA');
+  const [idRoom,setIdRoom] = useState<string>('');
 
   const handleToggleAccordion = (index: number) => {
     setAccordionStates((prevStates) => {
@@ -143,35 +166,105 @@ export default function Management() {
     });
   };
 
-  useEffect(() => {
-    // const getDataAllRoom = async () => {
-    //   const id = getUserId();
-    //   if(id !== '')
-    //   {
-    //     try {
+  const getDataDorm = async () => {
+    const id = getUserId();
+    if(id !== '') {
+      try {
+        const res = await apiClient(`${configAPI.api_url.localHost}/Dormitory/GetAllDormitory/${id}`, {
+          method: 'GET',
+        });
+        setDormitoryAPI(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
 
-    //       const res = await apiClient(`https://localhost:7282/Api/Dormitory/GetDormitoryData/${id}`, {
-    //         method: 'GET',
-    //       });
-    //       setRoomData(res.data);
-    //       console.log(res);
-    //     }
-    //     catch (error)
-    //     {
-    //       console.log(error);
-    //     }
-    //   }
+  const getBuildData = async (_dorm:dormitoryInterface[]) => {
+      try {
+        const buildingPromises = _dorm && _dorm.map(async (dormitory) => {
+          const res = await apiClient(`${configAPI.api_url.localHost}/Building/GetAllBuilding/${dormitory.idDormitory}`, {
+            method: 'GET',
+          });
+          return res.data;
+        });
+        const buildingResults = await Promise.all(buildingPromises);
+        const flattenedBuildingData: buildingInterface[] = buildingResults.flatMap((buildingArray: any[]) => buildingArray) as buildingInterface[];
+        return flattenedBuildingData;
+      } catch (error) {
+        console.error(error);
+      }
+  };
+  
+  const getRoomStatusData = async (_building: buildingInterface[]) => {
+    try {
+      const buildingAndRoomPromises = _building && _building.map(async (building) => {
+        const res = await apiClient(`${configAPI.api_url.localHost}/Room/GetAllRoomStatus/${building.idBuilding}`, {
+          method: 'GET',
+        });
+  
+        return {
+          ...building,
+          roomInfo: res.data,
+        };
+      });
+
+      const buildingAndRoomResults = await Promise.all(buildingAndRoomPromises);
+      return buildingAndRoomResults;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const mergeData = (dorm:dormitoryInterface[],buildingAndRoomResults:buildingInfoInterface[]) =>
+  {
+    const updatedDormitoryData = dorm.map(dormitory => {
+      // ค้นหา building ที่มี idDormitory ตรงกับ idDormitory ของ dormitory ปัจจุบัน
+      const matchingBuilding = buildingAndRoomResults.filter(building => building.idDormitory === dormitory.idDormitory);
+      if (matchingBuilding) {
+        // ถ้าพบ building ที่ตรงกัน ให้นำข้อมูลของ building มาใส่ใน buildingInfo ของ Dormitory นั้น ๆ
+        return {
+          ...dormitory,
+          buildingInfo: matchingBuilding
+        };
+      }
+      // ถ้าไม่พบ building ที่ตรงกัน ให้คงเดิม
+      return dormitory;
+    });
+    setDormitoryData(updatedDormitoryData);
+  }
+
+  useEffect(() => {
+    const getData = async () =>
+    {
+      getDataDorm();
+    }
+    
+    getData();
+    // if (dormitoryData && roomData.buildingAll) {
+    //   setAccordionStates(
+    //     Array.from({ length: roomData.buildingAll.length }, () => true)
+    //   );
     // }
 
-    // getDataAllRoom();
+  }, []);
 
-    setRoomData(jsonData);
-    if (roomData && roomData.buildingAll) {
-      setAccordionStates(
-        Array.from({ length: roomData.buildingAll.length }, () => true)
-      );
+  useEffect(() => {
+    const getData = async () =>
+    {
+      const buildData : buildingInterface[] = await getBuildData(dormitoryAPI);
+      const roomData = await getRoomStatusData(buildData);
+      mergeData(dormitoryAPI,roomData);
     }
-  }, [roomData]);
+    
+    getData();
+    // if (dormitoryData && roomData.buildingAll) {
+    //   setAccordionStates(
+    //     Array.from({ length: roomData.buildingAll.length }, () => true)
+    //   );
+    // }
+
+  }, [dormitoryAPI]);
 
   const [text, setText] = useState("ข้อความที่ต้องการแก้ไข");
   const [isEditing, setIsEditing] = useState(false);
@@ -213,8 +306,13 @@ export default function Management() {
 
   const handleOpen = (value: any) => setOpen(open === value ? 0 : value);
 
+  const check = () =>{
+    console.log(dormitoryData);
+  }
+
   return (
     <div className="mx-5 md:mx-10 mt-5 mb-10 min-w-[500px]">
+      <button onClick={check}>check</button>
       <div className="flex my-4 items-center justify-between">
         <Typography variant="h5" className="mr-5">
           Management
@@ -226,9 +324,9 @@ export default function Management() {
             </PopoverHandler>
             <PopoverContent className="flex flex-col gap-2">
               <Select label="Select Domitory">
-                <Option>Domitory A</Option>
-                <Option>Domitory B</Option>
-                <Option>Domitory C</Option>
+                {dormitoryData && dormitoryData.map((dormData,dormIndex) =>(
+                  <Option>Domitory {dormData.dormitoryName}</Option>
+                ))}
               </Select>
               <Select label="Select Building" disabled>
                 <Option>Building A</Option>
@@ -240,9 +338,9 @@ export default function Management() {
         </div>
         <div className="hidden md:flex gap-2">
           <Select label="Select Domitory">
-            <Option>Domitory A</Option>
-            <Option>Domitory B</Option>
-            <Option>Domitory C</Option>
+            {dormitoryData && dormitoryData.map((dormData,dormIndex) =>(
+              <Option>Domitory {dormData.dormitoryName}</Option>
+            ))}
           </Select>
           <Select label="Select Building" disabled>
             <Option>Building A</Option>
@@ -253,126 +351,129 @@ export default function Management() {
       </div>
       <div className="flex justify-between">
         <div className="w-full lg:w-[70%]">
-          <Card className="px-5 py-1 mb-5 lg:mr-5 h-fit overflow-auto min-w-[500px]">
-            <Accordion open={open === 1}>
-              <AccordionHeader className="font-Montserrat text-base border-b-0 cursor-default">
-                <div className="flex justify-between w-full mr-[-16px]">
-                  <div className="flex gap-4 items-center">
-                    Dormitory
-                    <PencilSquareIcon className="w-5 opacity-40 pb-1" />
+          {dormitoryData && dormitoryData.map((dormData,dormIndex) =>
+          (
+            <Card className="px-5 py-1 mb-5 lg:mr-5 h-fit overflow-auto min-w-[500px]">
+              <Accordion open={open === 1}>
+                <AccordionHeader className="font-Montserrat text-base border-b-0 cursor-default">
+                  <div className="flex justify-between w-full mr-[-16px]">
+                    <div className="flex gap-4 items-center">
+                      Dormitory {dormData.dormitoryName}
+                      <PencilSquareIcon className="w-5 opacity-40 pb-1" />
+                    </div>
+                    <div className="flex gap-4">
+                      <AddBuilding />
+                      <TrashIcon width={22} />
+                      <button onClick={() => handleOpen(1)}>
+                        <Icon id={1} open={open} />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex gap-4">
-                    <AddBuilding />
-                    <TrashIcon width={22} />
-                    <button onClick={() => handleOpen(1)}>
-                      <Icon id={1} open={open} />
-                    </button>
-                  </div>
-                </div>
-              </AccordionHeader>
-              <AccordionBody className="p-0 pb-2">
-                {roomData &&
-                  roomData.buildingAll &&
-                  roomData.buildingAll.map((data, index) => (
-                    <Card className="px-5 py-1 my-2 h-fit overflow-auto min-w-[500px] border shadow-none">
-                      <Accordion key={index} open={accordionStates[index]}>
-                        <AccordionHeader
-                          className={`font-Montserrat text-base ${
-                            accordionStates[index] === true ? "" : "border-b-0"
-                          } cursor-default`}
-                        >
-                          <div className="flex justify-between w-full mr-[-16px]">
-                            {isEditing ? (
-                              <div className="flex">
-                                <input
-                                  type="text"
-                                  value={editedText}
-                                  onChange={(e) =>
-                                    setEditedText(e.target.value)
-                                  }
-                                  onBlur={handleSave}
-                                  onKeyDown={handleKeyPress}
-                                  placeholder={data.buildingName}
-                                  className="border-0 focus:outline-none"
-                                />
-                              </div>
-                            ) : (
-                              <div className="flex gap-4 items-center">
-                                Building {data.buildingName}
-                                <PencilSquareIcon
-                                  className="w-5 opacity-40 pb-1 cursor-pointer"
-                                  onClick={handleEditClick}
-                                />
-                              </div>
-                            )}
-                            {/* <div className="flex gap-4">
-                            <TrashIcon width={22} /> */}
-                            <div className="flex gap-4">
-                              <AddRoom />
-                              <TrashIcon width={22} />
+                </AccordionHeader>
+                <AccordionBody className="p-0 pb-2">
+                  {dormData &&
+                    dormData.buildingInfo &&
+                    dormData.buildingInfo.map((buildingData, buildingIndex) => (
+                      <Card className="px-5 py-1 my-2 h-fit overflow-auto min-w-[500px] border shadow-none">
+                        <Accordion  key={buildingIndex} open={accordionStates[buildingIndex]}>
+                          <AccordionHeader
+                            className={`font-Montserrat text-base ${
+                              accordionStates[buildingIndex] === true ? "" : "border-b-0"
+                            } cursor-default`}
+                          >
+                            <div className="flex justify-between w-full mr-[-16px]">
+                              {isEditing ? (
+                                <div className="flex">
+                                  <input
+                                    type="text"
+                                    value={editedText}
+                                    onChange={(e) =>
+                                      setEditedText(e.target.value)
+                                    }
+                                    onBlur={handleSave}
+                                    onKeyDown={handleKeyPress}
+                                    placeholder={buildingData.buildingName}
+                                    className="border-0 focus:outline-none"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="flex gap-4 items-center">
+                                  Building {buildingData.buildingName}
+                                  <PencilSquareIcon
+                                    className="w-5 opacity-40 pb-1 cursor-pointer"
+                                    onClick={handleEditClick}
+                                  />
+                                </div>
+                              )}
+                              {/* <div className="flex gap-4">
+                              <TrashIcon width={22} /> */}
+                              <div className="flex gap-4">
+                                <AddRoom />
+                                <TrashIcon width={22} />
 
-                              <button
-                                onClick={() => handleToggleAccordion(index)}
-                              >
-                                <Icon id={accordionStates[index]} open={true} />
-                              </button>
-                              {/* </div> */}
-                            </div>
-                          </div>
-                        </AccordionHeader>
-                        <AccordionBody className="grid grid-cols-5 xl:grid-cols-7 2xl:grid-cols-10">
-                          {data &&
-                            data.roomAll &&
-                            data.roomAll.map((data) => (
-                              <Card className="flex m-1 h-14 rounded-md justify-center items-center border min-w-[85px] shadow-none">
-                                <button className="hidden lg:block w-full h-full">
-                                  <CheckCircleIcon
-                                    color="green"
-                                    className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                  />
-                                  {/* <ClockIcon
-                                  color="#ECB92F"
-                                  className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                /> */}
-                                  {/* <ExclamationCircleIcon
-                                  color="#AE2012"
-                                  className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                /> */}
-                                  <span>{data.roomName}</span>
-                                </button>
                                 <button
-                                  className="block lg:hidden w-full h-full"
-                                  onClick={handleOpenDialog}
+                                  onClick={() => handleToggleAccordion(buildingIndex)}
                                 >
-                                  <CheckCircleIcon
-                                    color="green"
-                                    className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                  />
-                                  {/* <ClockIcon
-                                  color="#ECB92F"
-                                  className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                /> */}
-                                  {/* <ExclamationCircleIcon
-                                  color="#AE2012"
-                                  className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                /> */}
-                                  <span>{data.roomName}</span>
+                                  <Icon id={accordionStates[buildingIndex]} open={true} />
                                 </button>
-                              </Card>
-                            ))}
-                        </AccordionBody>
-                      </Accordion>
-                    </Card>
-                  ))}
-              </AccordionBody>
-            </Accordion>
-          </Card>
+                                {/* </div> */}
+                              </div>
+                            </div>
+                          </AccordionHeader>
+                          <AccordionBody className="grid grid-cols-5 xl:grid-cols-7 2xl:grid-cols-10">
+                            {buildingData &&
+                              buildingData.roomInfo &&
+                              buildingData.roomInfo.map((roomData) => (
+                                <Card className="flex m-1 h-14 rounded-md justify-center items-center border min-w-[85px] shadow-none">
+                                  <button className="hidden lg:block w-full h-full" onClick={() => {setRoomName(roomData.roomName); setIdRoom(roomData.idRoom);}} >
+                                    <CheckCircleIcon
+                                      color="green"
+                                      className="absolute top-[-5px] right-[-5px] w-4 h-4"
+                                    />
+                                    {/* <ClockIcon
+                                    color="#ECB92F"
+                                    className="absolute top-[-5px] right-[-5px] w-4 h-4"
+                                  /> */}
+                                    {/* <ExclamationCircleIcon
+                                    color="#AE2012"
+                                    className="absolute top-[-5px] right-[-5px] w-4 h-4"
+                                  /> */}
+                                    <span>{roomData.roomName}</span>
+                                  </button>
+                                  <button
+                                    className="block lg:hidden w-full h-full"
+                                    onClick={handleOpenDialog}
+                                  >
+                                    <CheckCircleIcon
+                                      color="green"
+                                      className="absolute top-[-5px] right-[-5px] w-4 h-4"
+                                    />
+                                    {/* <ClockIcon
+                                    color="#ECB92F"
+                                    className="absolute top-[-5px] right-[-5px] w-4 h-4"
+                                  /> */}
+                                    {/* <ExclamationCircleIcon
+                                    color="#AE2012"
+                                    className="absolute top-[-5px] right-[-5px] w-4 h-4"
+                                  /> */}
+                                    <span>{roomData.roomName}</span>
+                                  </button>
+                                </Card>
+                              ))}
+                          </AccordionBody>
+                        </Accordion>
+                      </Card>
+                    ))}
+                </AccordionBody>
+              </Accordion>
+            </Card>
+          ))}
         </div>
         <Card className="hidden lg:block p-5 rounded-md w-[32%] min-w-[400px] h-fit !static">
           <div className="flex justify-between items-center">
             <div className="flex gap-4 items-center">
               <Typography variant="h6" color="black">
-                Room 101
+                Room {roomName}
               </Typography>
               <PencilSquareIcon className="w-5 opacity-40 pb-1" />
             </div>
@@ -392,7 +493,7 @@ export default function Management() {
                 value={tabsData[0].value}
                 className="!px-0 !pb-0"
               >
-                <TenantDetail />
+                <TenantDetail data = {idRoom} />
               </TabPanel>
               <TabPanel
                 key={tabsData[1].value}
@@ -413,7 +514,7 @@ export default function Management() {
                 value={tabsData[3].value}
                 className="!px-0 !pb-0"
               >
-                <Report />
+                <Report data = {idRoom} />
               </TabPanel>
             </TabsBody>
           </Tabs>
@@ -447,7 +548,7 @@ export default function Management() {
                   value={tabsData[0].value}
                   className="!px-0 !pb-0"
                 >
-                  <TenantDetail />
+                  <TenantDetail data ={idRoom} />
                 </TabPanel>
                 <TabPanel
                   key={tabsData[1].value}
@@ -468,7 +569,7 @@ export default function Management() {
                   value={tabsData[3].value}
                   className="!px-0 !pb-0"
                 >
-                  <Report />
+                  <Report data ={idRoom} />
                 </TabPanel>
               </TabsBody>
             </Tabs>
