@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
@@ -10,46 +10,66 @@ import {
 import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
 import { useToggle } from "../../hooks/useToggle";
+import apiClient from "../../services/apiClient";
+import configAPI from "../../services/configAPI.json";
+import { getUserId } from "../../services/userService";
 
-interface buildingInterface {
+interface dormitoryInterface {
   idUser: string;
-  buildingName: string;
-  buildingRoomNumberlength: number;
-  buildingFloor: number;
-  buildingRoom: number;
-  waterPrice: number;
-  electricalPrice: number;
-  roomPrice: number;
-  furniturePrice: number;
-  internetPrice: number;
-  parkingPrice: number;
+  address: string;
+  district: string;
+  province: string;
+  postalCode: string;
+  phoneNumber: string;
+  email: string;
 }
 
 export default function AddDorm() {
   const { status: isOpen, toggleStatus: setIsOpen } = useToggle();
 
-  const [form, setForm] = useState<buildingInterface>({
+  const [form, setForm] = useState<dormitoryInterface>({
     idUser: "",
-    buildingName: "",
-    buildingRoomNumberlength: 3,
-    buildingFloor: 0,
-    buildingRoom: 0,
-    waterPrice: 0,
-    electricalPrice: 0,
-    roomPrice: 0,
-    furniturePrice: 0,
-    internetPrice: 0,
-    parkingPrice: 0,
+    address: "",
+    district: "",
+    province: "",
+    postalCode: "",
+    phoneNumber: "",
+    email: ""
   });
 
-  const changeDormitoryHandler = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setForm({
-      ...form,
-      [event.currentTarget.name]: event.currentTarget.value,
-    });
+  const changeDormitoryHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({...form,[event.currentTarget.name]: event.currentTarget.value,});
   };
+
+  const sendDataAddDormitory = async () => {
+    const isFormFilled = Object.values(form).every((value) => value !== "");
+    if (isFormFilled) {
+      console.log(form);
+      try {
+        const res = await apiClient(
+          `${configAPI.api_url.localHost}/Dormitory/CreateDormitory`,
+          {
+            method: "POST",
+            data: form,
+          }
+        );
+        console.log(res);
+        window.location.reload();
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      alert("กรุณากรอกข้อมูลให้ครบ");
+    }
+  };
+
+  useEffect(() => {
+    const idUser = getUserId();
+    if(idUser != '')
+    {
+      setForm(prevForm => ({ ...prevForm, idUser}));
+    }
+  }, []);
 
   return (
     <div>
@@ -113,7 +133,7 @@ export default function AddDorm() {
             <p className="w-[150px] text-black text-right">E-mail</p>
             <Input
               onChange={changeDormitoryHandler}
-              name="eMail"
+              name="email"
               label="E-mail"
             />
           </div>
@@ -127,7 +147,7 @@ export default function AddDorm() {
           </div>
         </DialogBody>
         <DialogFooter className="p-2">
-          <Button variant="filled" className="bg-black" onClick={setIsOpen}>
+          <Button variant="filled" className="bg-black" onClick={sendDataAddDormitory}>
             <span>Continue</span>
           </Button>
         </DialogFooter>

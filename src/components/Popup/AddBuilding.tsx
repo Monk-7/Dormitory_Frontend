@@ -11,60 +11,94 @@ import { useToggle } from "../../hooks/useToggle";
 import React, { useState, useEffect } from "react";
 
 import apiClient from "../../services/apiClient";
-import { getUserId } from "../../services/userService";
+import configAPI from "../../services/configAPI.json";
 
 interface buildingInterface {
-  idUser: string;
+  idDormitory:string;
   buildingName: string;
-  buildingRoomNumberlength: number;
-  buildingFloor: number;
-  buildingRoom: number;
   waterPrice: number;
   electricalPrice: number;
+}
+
+interface roomInterface {
+  roomNumberlength: number;
+  numberofFloor: number;
+  numberofRoom: number;
   roomPrice: number;
   furniturePrice: number;
   internetPrice: number;
   parkingPrice: number;
 }
 
-export default function AddBuilding() {
+
+export default function AddBuilding({ data }: { data: string }) {
   const { status: isOpen, toggleStatus: setIsOpen } = useToggle();
 
-  const [form, setForm] = useState<buildingInterface>({
-    idUser: "",
+  const [formBuilding, setFormBuilding] = useState<buildingInterface>({
+    idDormitory: "",
     buildingName: "",
-    buildingRoomNumberlength: 3,
-    buildingFloor: 0,
-    buildingRoom: 0,
     waterPrice: 0,
-    electricalPrice: 0,
+    electricalPrice: 0
+  });
+
+  const [formRoom, setFormRoom] = useState<roomInterface>({
+    roomNumberlength: 3,
+    numberofFloor: 0,
+    numberofRoom: 0,
     roomPrice: 0,
     furniturePrice: 0,
     internetPrice: 0,
-    parkingPrice: 0,
+    parkingPrice: 0
   });
 
   const changeBuildingHandler = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setForm({ ...form, [event.currentTarget.name]: event.currentTarget.value });
+    setFormBuilding({ ...formBuilding, [event.currentTarget.name]: event.currentTarget.value });
   };
 
-  const sendDataAddBuilding = async () => {
-    const isFormFilled = Object.values(form).every((value) => value !== "");
-    const token = localStorage.getItem("token");
-    if (isFormFilled && token !== "") {
-      console.log(form);
+  const changeRoomHandler = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormRoom({ ...formRoom, [event.currentTarget.name]: event.currentTarget.value });
+  };
+
+
+  const sendDataAddBuildingAndRoom = async () => {
+    const isFormFilledBuilding = Object.values(formBuilding).every((value) => value !== "");
+    const isFormFilledRoom = Object.values(formRoom).every((value) => value !== "");
+    if (isFormFilledBuilding && isFormFilledRoom) {
+
+      console.log(formBuilding);
       try {
-        const res = await apiClient(
-          "https://localhost:7282/Api/Building/CreateBuilding",
+        const resBuilding = await apiClient(`${configAPI.api_url.localHost}/Building/CreateBuilding`,
           {
             method: "POST",
-            data: form,
+            data: formBuilding,
           }
         );
-        console.log(res);
-        window.location.reload();
+        const _formRoom = {
+          idBuilding : resBuilding.data,
+          roomNumberlength: formRoom.roomNumberlength,
+          numberofFloor: formRoom.numberofFloor,
+          numberofRoom: formRoom.numberofRoom,
+          roomPrice: formRoom.roomPrice,
+          furniturePrice: formRoom.furniturePrice,
+          internetPrice: 0,
+          parkingPrice: 0
+        }
+        try {
+          const resRoom = await apiClient(`${configAPI.api_url.localHost}/Room/CreateRoom`,
+            {
+              method: "POST",
+              data: _formRoom,
+            }
+          );
+          console.log(resRoom);
+          window.location.reload();
+        } catch (error) {
+          console.log(error);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -72,24 +106,25 @@ export default function AddBuilding() {
       alert("กรุณากรอกข้อมูลให้ครบ");
     }
   };
+  
+  useEffect(() => {
+    setFormBuilding(prevForm => ({ ...prevForm, idDormitory : data}));
+  }, []);
 
-  // useEffect(() => {
-  //   const idUser = getUserId();
-  //   if(idUser != '')
-  //   {
-  //     setForm(prevForm => ({ ...prevForm, idUser}));
-  //   }
-
-  // }, []);
+  const check = () => {
+    console.log(data);
+  }
 
   return (
     <div>
+      
       <PlusCircleIcon
         width={26}
         onClick={setIsOpen}
         className="cursor-pointer"
       />
       <Dialog size="sm" open={isOpen} handler={setIsOpen} className="p-4 ">
+      {/* <button onClick={check}>check</button> */}
         <DialogHeader className="p-2">Create new building</DialogHeader>
         <DialogBody className="p-2">
           <p>You need to enter the detail for create your dormitory.</p>
@@ -104,8 +139,8 @@ export default function AddBuilding() {
           <div className="my-6 flex items-center gap-5">
             <p className="w-[200px] text-black text-right">Number of floors</p>
             <Input
-              onChange={changeBuildingHandler}
-              name="numberOfFloors"
+              onChange={changeRoomHandler}
+              name="numberofFloor"
               label="Number of floors"
             />
           </div>
@@ -114,8 +149,8 @@ export default function AddBuilding() {
               Number of Rooms / Floor
             </p>
             <Input
-              onChange={changeBuildingHandler}
-              name="roomsPerFloor"
+              onChange={changeRoomHandler}
+              name="numberofRoom"
               label="Number of Rooms / Floor"
             />
           </div>
@@ -127,7 +162,7 @@ export default function AddBuilding() {
           <div className="my-6 flex items-center gap-5">
             <p className="w-[200px] text-black text-right">Room Price</p>
             <Input
-              onChange={changeBuildingHandler}
+              onChange={changeRoomHandler}
               name="roomPrice"
               label="Room Price"
             />
@@ -135,7 +170,7 @@ export default function AddBuilding() {
           <div className="my-6 flex items-center gap-5">
             <p className="w-[200px] text-black text-right">Furniture Price</p>
             <Input
-              onChange={changeBuildingHandler}
+              onChange={changeRoomHandler}
               name="furniturePrice"
               label="Furniture Price"
             />
@@ -144,7 +179,7 @@ export default function AddBuilding() {
             <p className="w-[200px] text-black text-right">Electric Fee</p>
             <Input
               onChange={changeBuildingHandler}
-              name="electricFee"
+              name="electricalPrice"
               label="Electric Fee"
             />
           </div>
@@ -152,14 +187,14 @@ export default function AddBuilding() {
             <p className="w-[200px] text-black text-right">Water Fee</p>
             <Input
               onChange={changeBuildingHandler}
-              name="waterFee"
+              name="waterPrice"
               label="Water Fee"
             />
           </div>
         </DialogBody>
         <DialogFooter className="p-2">
-          <Button variant="filled" className="bg-black" onClick={setIsOpen}>
-            <span onClick={sendDataAddBuilding}>Continue</span>
+          <Button variant="filled" className="bg-black" onClick={sendDataAddBuildingAndRoom}>
+            <span>Continue</span>
           </Button>
         </DialogFooter>
       </Dialog>

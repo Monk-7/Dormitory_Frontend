@@ -49,6 +49,7 @@ import {
   ExclamationCircleIcon,
 } from "@heroicons/react/24/solid";
 import AddRoom from "../components/Popup/AddRoom";
+import DeletePopup from "../components/Popup/DeletePopup";
 
 const tabsData = [
   {
@@ -152,11 +153,17 @@ interface dormitoryInterface {
 export default function Management() {
 
   const [accordionStates, setAccordionStates] = useState<boolean[]>([]);
+
+  const [dormitoryDefaultData, setDormitoryDefaultData] = useState<dormitoryInfoInterface[]>([]);
   const [dormitoryData, setDormitoryData] = useState<dormitoryInfoInterface[]>([]);
   const [dormitoryAPI, setDormitoryAPI] = useState<dormitoryInterface[]>([]);
+  const [valueSelectedDormitory, setValueSelectedDormitory] = useState<number>(-1);
+
   const [idDormitory,setIdDormitory] = useState<string>();
   const [roomName,setRoomName] = useState<string>('NO DATA');
   const [idRoom,setIdRoom] = useState<string>('');
+
+  
 
   const handleToggleAccordion = (index: number) => {
     setAccordionStates((prevStates) => {
@@ -232,6 +239,7 @@ export default function Management() {
       return dormitory;
     });
     setDormitoryData(updatedDormitoryData);
+    setDormitoryDefaultData(updatedDormitoryData);
   }
 
   useEffect(() => {
@@ -256,13 +264,7 @@ export default function Management() {
       const roomData = await getRoomStatusData(buildData);
       mergeData(dormitoryAPI,roomData);
     }
-    
     getData();
-    // if (dormitoryData && roomData.buildingAll) {
-    //   setAccordionStates(
-    //     Array.from({ length: roomData.buildingAll.length }, () => true)
-    //   );
-    // }
 
   }, [dormitoryAPI]);
 
@@ -271,13 +273,12 @@ export default function Management() {
   const [editedText, setEditedText] = useState("");
 
   const [openDelDormDialog, setOpenDelDormDialog] = React.useState(false);
+  const handleDelDormDialog = () => setOpenDelDormDialog(!openDelDormDialog);
 
-  const handleDelDormDialog = () => setOpenDialog(!openDialog);
   const [openDelBuildDialog, setOpenDelBuildDialog] = React.useState(false);
+  const handleOpenDelBuildDialog = () => setOpenDelBuildDialog(!openDelBuildDialog);
 
-  const handleOpenDelBuildDialog = () => setOpenDialog(!openDialog);
   const [openDialog, setOpenDialog] = React.useState(false);
-
   const handleOpenDialog = () => setOpenDialog(!openDialog);
 
   useEffect(() => {
@@ -307,12 +308,26 @@ export default function Management() {
   const handleOpen = (value: any) => setOpen(open === value ? 0 : value);
 
   const check = () =>{
-    console.log(dormitoryData);
+    // console.log(JSON.stringify(dormitoryData));
+    console.log(dormitoryDefaultData[0]);
+  }
+
+  const setNewDataSelected = (val:number) =>
+  {
+    const selectedDormitory = dormitoryDefaultData[valueSelectedDormitory];
+
+    const selectedBuilding = dormitoryDefaultData[valueSelectedDormitory].buildingInfo[val];
+
+    setDormitoryData([{
+      ...selectedDormitory,
+      buildingInfo: [selectedBuilding]
+    }]);
+
   }
 
   return (
     <div className="mx-5 md:mx-10 mt-5 mb-10 min-w-[500px]">
-      <button onClick={check}>check</button>
+      {/* <button onClick={check}>check</button> */}
       <div className="flex my-4 items-center justify-between">
         <Typography variant="h5" className="mr-5">
           Management
@@ -323,34 +338,56 @@ export default function Management() {
               <AdjustmentsHorizontalIcon className="w-6 cursor-pointer" />
             </PopoverHandler>
             <PopoverContent className="flex flex-col gap-2">
-              <Select label="Select Domitory">
-                {dormitoryData && dormitoryData.map((dormData,dormIndex) =>(
-                  <Option>Domitory {dormData.dormitoryName}</Option>
+            <Select
+              label="Select Domitory"
+              onChange={(val) => {setValueSelectedDormitory(parseInt(val)); setDormitoryData([dormitoryDefaultData[parseInt(val)]]);}}>
+              {dormitoryDefaultData &&
+                dormitoryDefaultData.map((dormData, dormIndex) => (
+                  <Option key={dormIndex} value={dormIndex.toString()}>
+                    Dormitory {dormData.dormitoryName}
+                  </Option>
                 ))}
-              </Select>
-              <Select label="Select Building" disabled>
-                <Option>Building A</Option>
-                <Option>Building B</Option>
-                <Option>Building C</Option>
-              </Select>
+            </Select>
+            <Select
+              label="Select Building"
+              disabled={valueSelectedDormitory === -1}
+              onChange={(val) => {
+                setNewDataSelected(parseInt(val));
+              }}>
+              {dormitoryDefaultData && dormitoryDefaultData[valueSelectedDormitory] && dormitoryDefaultData[valueSelectedDormitory].buildingInfo ?
+                dormitoryDefaultData[valueSelectedDormitory].buildingInfo.map((building, buildingIndex) => (
+                  <Option key={building.idBuilding} value={buildingIndex.toString()}>{building.buildingName}</Option>
+                )) : <span>NO DATA</span>}
+            </Select>
             </PopoverContent>
           </Popover>
         </div>
         <div className="hidden md:flex gap-2">
-          <Select label="Select Domitory">
-            {dormitoryData && dormitoryData.map((dormData,dormIndex) =>(
-              <Option>Domitory {dormData.dormitoryName}</Option>
-            ))}
+          <Select
+            label="Select Domitory"
+            onChange={(val) => {setValueSelectedDormitory(parseInt(val)); setDormitoryData([dormitoryDefaultData[parseInt(val)]]);}}>
+            {dormitoryDefaultData &&
+              dormitoryDefaultData.map((dormData, dormIndex) => (
+                <Option key={dormIndex} value={dormIndex.toString()}>
+                  Dormitory {dormData.dormitoryName}
+                </Option>
+              ))}
           </Select>
-          <Select label="Select Building" disabled>
-            <Option>Building A</Option>
-            <Option>Building B</Option>
-            <Option>Building C</Option>
+          <Select
+            label="Select Building"
+            disabled={valueSelectedDormitory === -1}
+            onChange={(val) => {
+              setNewDataSelected(parseInt(val));
+            }}>
+            {dormitoryDefaultData && dormitoryDefaultData[valueSelectedDormitory] && dormitoryDefaultData[valueSelectedDormitory].buildingInfo ?
+              dormitoryDefaultData[valueSelectedDormitory].buildingInfo.map((building, buildingIndex) => (
+                <Option key={building.idBuilding} value={buildingIndex.toString()}>{building.buildingName}</Option>
+              )) : <span>NO DATA</span>}
           </Select>
         </div>
       </div>
       <div className="flex justify-between">
-        <div className="w-full lg:w-[70%]">
+      <div className="w-full lg:w-[70%]">
           {dormitoryData && dormitoryData.map((dormData,dormIndex) =>
           (
             <Card className="px-5 py-1 mb-5 lg:mr-5 h-fit overflow-auto min-w-[500px]">
@@ -362,8 +399,11 @@ export default function Management() {
                       <PencilSquareIcon className="w-5 opacity-40 pb-1" />
                     </div>
                     <div className="flex gap-4">
-                      <AddBuilding />
-                      <TrashIcon width={22} />
+                      <AddBuilding data={dormData.idDormitory} />
+                      <button onClick={handleDelDormDialog}>
+                        <TrashIcon width={22} />
+                      </button>
+                      <DeletePopup open={openDelDormDialog} handleDialog={handleDelDormDialog} />
                       <button onClick={() => handleOpen(1)}>
                         <Icon id={1} open={open} />
                       </button>
@@ -408,9 +448,11 @@ export default function Management() {
                               {/* <div className="flex gap-4">
                               <TrashIcon width={22} /> */}
                               <div className="flex gap-4">
-                                <AddRoom />
-                                <TrashIcon width={22} />
-
+                                <AddRoom data = {buildingData.idBuilding}/>
+                                <button onClick={handleOpenDelBuildDialog}>
+                                  <TrashIcon width={22} />
+                                </button>
+                                <DeletePopup open={openDelBuildDialog} handleDialog={handleOpenDelBuildDialog} />
                                 <button
                                   onClick={() => handleToggleAccordion(buildingIndex)}
                                 >
@@ -424,41 +466,47 @@ export default function Management() {
                             {buildingData &&
                               buildingData.roomInfo &&
                               buildingData.roomInfo.map((roomData) => (
-                                <Card className="flex m-1 h-14 rounded-md justify-center items-center border min-w-[85px] shadow-none">
-                                  <button className="hidden lg:block w-full h-full" onClick={() => {setRoomName(roomData.roomName); setIdRoom(roomData.idRoom);}} >
-                                    <CheckCircleIcon
-                                      color="green"
-                                      className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                    />
-                                    {/* <ClockIcon
-                                    color="#ECB92F"
-                                    className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                  /> */}
-                                    {/* <ExclamationCircleIcon
-                                    color="#AE2012"
-                                    className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                  /> */}
-                                    <span>{roomData.roomName}</span>
-                                  </button>
-                                  <button
-                                    className="block lg:hidden w-full h-full"
-                                    onClick={handleOpenDialog}
-                                  >
-                                    <CheckCircleIcon
-                                      color="green"
-                                      className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                    />
-                                    {/* <ClockIcon
-                                    color="#ECB92F"
-                                    className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                  /> */}
-                                    {/* <ExclamationCircleIcon
-                                    color="#AE2012"
-                                    className="absolute top-[-5px] right-[-5px] w-4 h-4"
-                                  /> */}
-                                    <span>{roomData.roomName}</span>
-                                  </button>
-                                </Card>
+                                <div>
+                                  {roomData.isRoomStay ?
+                                    <Card className="flex m-1 h-14 rounded-md justify-center items-center border min-w-[85px] shadow-none bg-teal-400">
+                                      <button className="hidden lg:block w-full h-full" onClick={() => {setRoomName(roomData.roomName); setIdRoom(roomData.idRoom);}} >
+                                      {roomData.isRoomLatePay ? <ExclamationCircleIcon color="#AE2012" className="absolute top-[-5px] right-[-5px] w-4 h-4"/> 
+                                        :
+                                        roomData.isRoomPay ? <CheckCircleIcon color="green" className="absolute top-[-5px] right-[-5px] w-4 h-4"/> 
+                                        : 
+                                        <ClockIcon color="#ECB92F" className="absolute top-[-5px] right-[-5px] w-4 h-4"/>
+                                      }  
+                                        <span className="font-bold text-base text-white">{roomData.roomName}</span>
+                                      </button>
+                                      <button
+                                        className="block lg:hidden w-full h-full"
+                                        onClick={handleOpenDialog}
+                                      >
+                                        {roomData.isRoomLatePay ? <ExclamationCircleIcon color="#AE2012" className="absolute top-[-5px] right-[-5px] w-4 h-4"/> 
+                                          :
+                                          roomData.isRoomPay ? <CheckCircleIcon color="green" className="absolute top-[-5px] right-[-5px] w-4 h-4"/> 
+                                          : 
+                                          <ClockIcon color="#ECB92F" className="absolute top-[-5px] right-[-5px] w-4 h-4"/>
+                                        }  
+                                        <span className="font-bold text-base text-white">{roomData.roomName}</span>
+                                      </button>
+                                    </Card>
+                                  :
+                                  <Card className="flex m-1 h-14 rounded-md justify-center items-center border min-w-[85px] shadow-none">
+                                    <button className="hidden lg:block w-full h-full" onClick={() => {setRoomName(roomData.roomName); setIdRoom(roomData.idRoom);}} >
+                                      <ClockIcon color="#ECB92F" className="absolute top-[-5px] right-[-5px] w-4 h-4"/> 
+                                      <span className="font-bold text-base">{roomData.roomName}</span>
+                                    </button>
+                                    <button
+                                      className="block lg:hidden w-full h-full"
+                                      onClick={handleOpenDialog}>            
+                                      <ClockIcon color="#ECB92F" className="absolute top-[-5px] right-[-5px] w-4 h-4"/>                                      
+                                      <span className="font-bold text-base ">{roomData.roomName}</span>
+                                    </button>
+                                  </Card>
+                                  }
+                                  
+                                </div>  
                               ))}
                           </AccordionBody>
                         </Accordion>
