@@ -12,7 +12,7 @@ import {
   Input,
   Typography,
 } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import DeletePopup from "./Popup/DeletePopup";
 import configAPI from "../services/configAPI.json";
 import apiClient from "../services/apiClient";
@@ -39,6 +39,14 @@ interface UserInterface {
   token: string;
 }
 
+interface updateRoomInterface {
+  idRoom: string,
+  roomPrice: number,
+  furniturePrice: number,
+  internetPrice: number,
+  parkingPrice: number
+}
+
 export default function TenantDetail({ data }: { data: string }) {
   const [openDelDialog, setOpenDelDialog] = useState(false);
   const handleOpenDelDialog = () => setOpenDelDialog(!openDelDialog);
@@ -48,6 +56,17 @@ export default function TenantDetail({ data }: { data: string }) {
 
   const [roomData,setRoomData] = useState<roomInterface>();
   const [userData,setUserData] = useState<UserInterface[]>();
+  const [codeRoom,setCodeRoom] = useState<string>("");
+
+  const [form,setForm] = useState<updateRoomInterface>(
+    {
+      idRoom: '',
+      roomPrice: 0,
+      furniturePrice: 0,
+      internetPrice: 0,
+      parkingPrice: 0
+    }
+  );
 
   const getRoom = async () => 
   {
@@ -56,6 +75,15 @@ export default function TenantDetail({ data }: { data: string }) {
         method: 'GET',
       });
       setRoomData(res.data);
+      setForm(
+        {
+          idRoom: res.data.idRoom,
+          roomPrice: res.data.roomPrice,
+          furniturePrice: res.data.furniturePrice,
+          internetPrice: res.data.internetPrice,
+          parkingPrice: res.data.parkingPrice
+        }
+      )
     } catch (error) {
       console.error(error);
     }
@@ -73,6 +101,45 @@ export default function TenantDetail({ data }: { data: string }) {
     }
   }
 
+  const getCodeRoom = async (idRoom: string) =>
+  {
+    try {
+      const res = await apiClient(`${configAPI.api_url.localHost}/Room/CreateCode/${idRoom}`, {
+        method: 'POST',
+      });
+      setCodeRoom(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const changeRoomHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({...form,[event.currentTarget.name]: event.currentTarget.value,});
+  };
+
+  const handleUpdateData = async () =>
+  {
+    const isFormFilled = Object.values(form).every((value) => value !== "");
+    if (isFormFilled) {
+      console.log(form);
+      try {
+        const res = await apiClient(
+          `${configAPI.api_url.localHost}/Room/UpdateRoom`,
+          {
+            method: "PUT",
+            data: form,
+          }
+        );
+        console.log(res);
+        window.location.reload();
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      alert("กรุณากรอกข้อมูลให้ครบ");
+    }
+  }
+
   useEffect(() =>
   {
     getRoom();
@@ -80,8 +147,14 @@ export default function TenantDetail({ data }: { data: string }) {
     
   },[data])
 
+  const check = () =>
+  {
+    console.log(form)
+  }
+
   return (
     <div className="text-sm">
+      <button onClick={check}>CHECK</button>
       <Typography variant="h6">Tenant Details</Typography>
       {userData?.length !== 0 ? userData && userData.map((user,index) => (
         <div >
@@ -119,6 +192,8 @@ export default function TenantDetail({ data }: { data: string }) {
         <span className="text-right pr-5">Room fee</span>
         <div className="col-span-3">
         <Input
+            onChange={changeRoomHandler}
+            name="roomPrice"
             type="text"
             placeholder={roomData?.roomPrice.toString()}
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
@@ -133,6 +208,8 @@ export default function TenantDetail({ data }: { data: string }) {
         <span className="text-right pr-5">Furniture fee</span>
         <div className="col-span-3">
         <Input
+            onChange={changeRoomHandler}
+            name="furniturePrice"
             type="text"
             placeholder={roomData?.furniturePrice.toString()}
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
@@ -147,6 +224,8 @@ export default function TenantDetail({ data }: { data: string }) {
         <span className="text-right pr-5">Internet fee</span>
         <div className="col-span-3">
         <Input
+            onChange={changeRoomHandler}
+            name="internetPrice"
             type="text"
             placeholder={roomData?.internetPrice.toString()}
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
@@ -161,6 +240,8 @@ export default function TenantDetail({ data }: { data: string }) {
         <span className="text-right pr-5">Parking fee</span>
         <div className="col-span-3">
         <Input
+            onChange={changeRoomHandler}
+            name="parkingPrice"
             type="text"
             placeholder={roomData?.parkingPrice.toString()}
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
@@ -186,20 +267,20 @@ export default function TenantDetail({ data }: { data: string }) {
         </Button>
         <DeletePopup open={openDelDialog} handleDialog={handleOpenDelDialog} />
         <div className="flex gap-2">
-          <Button onClick={handleOpenGenCode} className=" bg-gray-100 text-black shadow-none hover:shadow-none">
+          <Button onClick={() => {handleOpenGenCode(); getCodeRoom(roomData?.idRoom);}} className=" bg-gray-100 text-black shadow-none hover:shadow-none">
             Gen code
           </Button>
-          <Dialog size="xs" open={openGenCode} handler={handleOpenGenCode} >
+          <Dialog size="xs" open={openGenCode} handler={handleOpenGenCode}>
             <DialogBody className="flex flex-col items-center gap-5">
             <Typography variant="h4" color="black">
               Your Code
             </Typography>
             <Typography variant="h5" color="black">
-              CAS26d8
+              {codeRoom}
             </Typography>
             </DialogBody>
           </Dialog>
-          <Button>Save</Button>
+          <Button onClick={handleUpdateData}>Save</Button>
         </div>
       </div>
 

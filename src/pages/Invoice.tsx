@@ -15,17 +15,77 @@ import {
   Typography,
 } from "@material-tailwind/react";
 
+import apiClient from "../services/apiClient";
+import configAPI from "../services/configAPI.json";
+import { getUserId } from "../services/userService";
+import { useEffect, useState } from "react";
+
+interface invoiceInterface {
+  idInvoice: string,
+  idRoom: string,
+  roomName: number,
+  roomPrice: number,
+  electricityPrice: number,
+  waterPrice: number,
+  furniturePrice: number,
+  internetPrice: number,
+  parkingPrice: number,
+  other: number,
+  total: number,
+  dueDate : Date,
+  timesTamp : Date,
+  status : boolean
+}
+
+interface getInvoiceInterface {
+  idDormitory: string;
+  idBuilding: string;
+  buildingName: string;
+  dormitoryName: string;
+  invoiceAll : invoiceInterface[]
+}
+
 export default function Invoice() {
-  const tabsData = [
-    {
-      label: "Electrical Fee",
-      value: "efee",
-    },
-    {
-      label: "Water Fee",
-      value: "wfee",
-    },
-  ];
+
+  const [invioceData, setInvioceData] = useState<getInvoiceInterface[]>([]);
+  const [invioceDefaultData, setInvioceDefaultData] = useState<getInvoiceInterface[]>([]);
+
+  const [selectedDormitoryId, setSelectedDormitoryId] = useState<string>('');
+
+  const getDataInvoice = async () => {
+    const id = getUserId();
+    if(id !== '') {
+      try {
+        const res = await apiClient(`${configAPI.api_url.localHost}/Meter/GetAndCreateMeter/${id}`, {
+          method: 'GET',
+        });
+
+        const meterData = {
+          idUser : id,
+          meterAll : res.data
+        }
+
+        try {
+          const resInvoice = await apiClient(`${configAPI.api_url.localHost}/Invoice/CreateInvoice`, {
+            method: 'POST',
+            data: meterData
+          });
+          setInvioceData(resInvoice.data);
+          setInvioceDefaultData(resInvoice.data);
+        } catch (error) {
+          console.log(error);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  useEffect(() => {
+  
+    getDataInvoice();
+    
+  }, []);
 
   const TABLE_HEAD = [
     "Room No.",
@@ -38,73 +98,47 @@ export default function Invoice() {
     "Status",
   ];
 
-  const TABLE_ROWS = [
-    {
-      roomno: "101",
-      roomfee: "500",
-      internetfee: "600",
-      other: "100",
-      eletricfee: "100",
-      waterfee: "100",
-      total: "100",
-      status: "",
-    },
-    {
-      roomno: "101",
-      roomfee: "500",
-      internetfee: "600",
-      other: "100",
-      eletricfee: "100",
-      waterfee: "100",
-      total: "100",
-      status: "",
-    },
-    {
-      roomno: "101",
-      roomfee: "500",
-      internetfee: "600",
-      other: "100",
-      eletricfee: "100",
-      waterfee: "100",
-      total: "100",
-      status: "",
-    },
-    {
-      roomno: "101",
-      roomfee: "500",
-      internetfee: "600",
-      other: "100",
-      eletricfee: "100",
-      waterfee: "100",
-      total: "100",
-      status: "",
-    },
-    {
-      roomno: "101",
-      roomfee: "500",
-      internetfee: "600",
-      other: "100",
-      eletricfee: "100",
-      waterfee: "100",
-      total: "100",
-      status: "",
-    },
-  ];
+  const check = () => {
+    console.log(invioceData);
+  }
+
+  const getSelectDataDormitory = (idDormitory:string) => {
+    const filteredData = invioceDefaultData.filter(data => data.idDormitory === idDormitory);
+    setInvioceData(filteredData);
+  }
+
+  const getSelectDataBuilding = (idBuilding:string) => {
+    const filteredData = invioceDefaultData.filter(data => data.idBuilding === idBuilding);
+    setInvioceData(filteredData);
+  }
 
   return (
     <div className="mx-5 md:mx-10 mt-5 mb-10 min-w-[500px]">
+      {/* <button onClick={check}>CHECK</button> */}
       <div className="flex justify-between items-center">
         <Typography variant="h5">Invoice</Typography>
         <div className="flex w-70 gap-2">
-          <Select label="Select Domitory">
-            <Option>Domitory A</Option>
-            <Option>Domitory B</Option>
-            <Option>Domitory C</Option>
+          <Select 
+            onChange={(val) => {setSelectedDormitoryId(val); getSelectDataDormitory(val)}}
+            label="Select Dormitory">
+            {invioceDefaultData.reduce((uniqueDormitories, invoData) => {
+              if (!uniqueDormitories.includes(invoData.idDormitory)) {
+                uniqueDormitories.push(invoData.idDormitory);
+              }
+              return uniqueDormitories;
+            }, []).map((dormitoryId, index) => {
+              const invoData = invioceDefaultData.find(item => item.idDormitory === dormitoryId);
+              return <Option key={index} value={invoData?.idDormitory}>{invoData.dormitoryName}</Option>;
+            })}
           </Select>
-          <Select label="Select Building" disabled>
-            <Option>Building A</Option>
-            <Option>Building B</Option>
-            <Option>Building C</Option>
+          <Select 
+            onChange={(val) => {getSelectDataBuilding(val)}}
+            label="Select Building" disabled = {selectedDormitoryId === ''}>
+              {invioceDefaultData
+                .filter(meterData => meterData.idDormitory === selectedDormitoryId) // กรองข้อมูลเพื่อให้เหลือเฉพาะที่มี idDormitory เดียวกับที่เลือกไว้
+                .map((meterData, index) => (
+                  <Option key={index} value={meterData?.idBuilding} >{meterData.buildingName}</Option> // แสดงชื่อตึก
+                ))}
           </Select>
         </div>
       </div>
@@ -180,8 +214,9 @@ export default function Invoice() {
           </PopoverContent>
         </Popover>
       </div>
+      {invioceData && invioceData.map((dormData) => (
       <div className="px-5 mt-5 border rounded-lg overflow-auto">
-        <p className="font-bold my-5">2023 December</p>
+        <p className="font-bold my-5">{dormData.dormitoryName} | Building {dormData.buildingName} </p>
         <table className="w-full min-w-max table-auto text-center mb-5 ">
           <thead>
             <tr>
@@ -199,25 +234,15 @@ export default function Invoice() {
             </tr>
           </thead>
           <tbody>
-            {TABLE_ROWS.map(
-              ({
-                roomno,
-                roomfee,
-                internetfee,
-                other,
-                eletricfee,
-                waterfee,
-                total,
-                status,
-              }) => (
-                <tr key={roomno} className="even:bg-blue-gray-50/50">
+            {dormData.invoiceAll.map((invoice) => (
+                <tr key={invoice.roomName} className="even:bg-blue-gray-50/50">
                   <td className="p-4">
                     <Typography
                       variant="small"
                       color="black"
                       className="font-normal"
                     >
-                      {roomno}
+                      {invoice.roomName}
                     </Typography>
                   </td>
                   <td className="p-2">
@@ -226,7 +251,7 @@ export default function Invoice() {
                       color="black"
                       className="font-normal"
                     >
-                      {roomfee}
+                      {invoice.roomPrice}
                     </Typography>
                   </td>
                   <td className="p-2">
@@ -235,7 +260,7 @@ export default function Invoice() {
                       color="black"
                       className="font-normal"
                     >
-                      {internetfee}
+                      {invoice.internetPrice}
                     </Typography>
                   </td>
                   <td className="p-2">
@@ -244,7 +269,7 @@ export default function Invoice() {
                       color="black"
                       className="font-normal"
                     >
-                      {other}
+                      {invoice.other}
                     </Typography>
                   </td>
                   <td className="p-2">
@@ -253,7 +278,7 @@ export default function Invoice() {
                       color="black"
                       className="font-normal"
                     >
-                      {eletricfee}
+                      {invoice.electricityPrice}
                     </Typography>
                   </td>
                   <td className="p-2">
@@ -262,7 +287,7 @@ export default function Invoice() {
                       color="black"
                       className="font-normal"
                     >
-                      {waterfee}
+                      {invoice.waterPrice}
                     </Typography>
                   </td>
                   <td className="p-2">
@@ -271,7 +296,7 @@ export default function Invoice() {
                       color="black"
                       className="font-normal"
                     >
-                      {total}
+                      {invoice.total}
                     </Typography>
                   </td>
                   <td className="p-2">
@@ -280,7 +305,7 @@ export default function Invoice() {
                       color="black"
                       className="font-normal"
                     >
-                      {status}
+                      {invoice.status}
                     </Typography>
                   </td>
                 </tr>
@@ -289,6 +314,7 @@ export default function Invoice() {
           </tbody>
         </table>
       </div>
+      ))}
       <div className="flex justify-end mt-5">
         <Button className="flex items-center gap-2">
           <PaperAirplaneIcon className="h-5 w-5" />

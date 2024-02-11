@@ -11,37 +11,20 @@ import { useToggle } from "../../hooks/useToggle";
 import React, { useState, useEffect } from "react";
 
 import apiClient from "../../services/apiClient";
-import { getUserId } from "../../services/userService";
+import configAPI from "../../services/configAPI.json";
 
-interface buildingInterface {
-  idUser: string;
-  buildingName: string;
-  buildingRoomNumberlength: number;
-  buildingFloor: number;
-  buildingRoom: number;
-  waterPrice: number;
-  electricalPrice: number;
-  roomPrice: number;
-  furniturePrice: number;
-  internetPrice: number;
-  parkingPrice: number;
+
+interface roomInterface {
+  idBuilding: string;
+  roomName: string;
 }
 
-export default function AddRoom() {
+export default function AddRoom({ data }: { data: string }) {
   const { status: isOpen, toggleStatus: setIsOpen } = useToggle();
 
-  const [form, setForm] = useState<buildingInterface>({
-    idUser: "",
-    buildingName: "",
-    buildingRoomNumberlength: 3,
-    buildingFloor: 0,
-    buildingRoom: 0,
-    waterPrice: 0,
-    electricalPrice: 0,
-    roomPrice: 0,
-    furniturePrice: 0,
-    internetPrice: 0,
-    parkingPrice: 0,
+  const [form, setForm] = useState<roomInterface>({
+    idBuilding: "",
+    roomName: "",
   });
 
   const changeBuildingHandler = (
@@ -52,12 +35,11 @@ export default function AddRoom() {
 
   const sendDataAddBuilding = async () => {
     const isFormFilled = Object.values(form).every((value) => value !== "");
-    const token = localStorage.getItem("token");
-    if (isFormFilled && token !== "") {
+    if (isFormFilled) {
       console.log(form);
       try {
         const res = await apiClient(
-          "https://localhost:7282/Api/Building/CreateBuilding",
+          `${configAPI.api_url.localHost}/Room/CreateOneRoom`,
           {
             method: "POST",
             data: form,
@@ -73,14 +55,9 @@ export default function AddRoom() {
     }
   };
 
-  // useEffect(() => {
-  //   const idUser = getUserId();
-  //   if(idUser != '')
-  //   {
-  //     setForm(prevForm => ({ ...prevForm, idUser}));
-  //   }
-
-  // }, []);
+  useEffect(() => {
+    setForm(prevForm => ({ ...prevForm, idBuilding : data}));
+  }, []);
 
   return (
     <div>
