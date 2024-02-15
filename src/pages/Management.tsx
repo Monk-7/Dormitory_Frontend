@@ -548,14 +548,14 @@ export default function Management() {
                 value={tabsData[1].value}
                 className="!px-0 !pb-0"
               >
-                <Lease />
+                <Lease data = {idRoom}/>
               </TabPanel>
               <TabPanel
                 key={tabsData[2].value}
                 value={tabsData[2].value}
                 className="!px-0 !pb-0"
               >
-                <PaymentHistory />
+                <PaymentHistory data = {idRoom} />
               </TabPanel>
               <TabPanel
                 key={tabsData[3].value}

@@ -149,11 +149,12 @@ export default function TenantDetail({ data }: { data: string }) {
 
   const check = () =>
   {
-    console.log(form)
+    console.log(form);
   }
 
   return (
     <div className="text-sm">
+      
       <button onClick={check}>CHECK</button>
       <Typography variant="h6">Tenant Details</Typography>
       {userData?.length !== 0 ? userData && userData.map((user,index) => (
