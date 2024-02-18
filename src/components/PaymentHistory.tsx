@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
-import configAPI from "../services/configAPI.json";
+import {API} from "../services/configAPI";
 import apiClient from "../services/apiClient";
 
 interface invoiceInterface {
@@ -131,7 +131,7 @@ export default function PaymentHistory({ data }: { data: string }) {
   {
     try { 
       const res = await apiClient(
-        `${configAPI.api_url.localHost}/Invoice/GetInvoicesHistory/${data}`,
+        `${API}/Invoice/GetInvoicesHistory/${data}`,
         {
           method: "GET",
         }

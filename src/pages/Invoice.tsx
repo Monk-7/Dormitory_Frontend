@@ -16,7 +16,7 @@ import {
 } from "@material-tailwind/react";
 
 import apiClient from "../services/apiClient";
-import configAPI from "../services/configAPI.json";
+import { API } from "../services/configAPI";
 import { getUserId } from "../services/userService";
 import { useEffect, useState } from "react";
 
@@ -56,7 +56,7 @@ export default function Invoice() {
     const id = getUserId();
     if(id !== '') {
       try {
-        const res = await apiClient(`${configAPI.api_url.localHost}/Meter/GetAndCreateMeter/${id}`, {
+        const res = await apiClient(`${API}/Meter/GetAndCreateMeter/${id}`, {
           method: 'GET',
         });
 
@@ -66,7 +66,7 @@ export default function Invoice() {
         }
 
         try {
-          const resInvoice = await apiClient(`${configAPI.api_url.localHost}/Invoice/CreateInvoice`, {
+          const resInvoice = await apiClient(`${API}/Invoice/CreateInvoice`, {
             method: 'POST',
             data: meterData
           });

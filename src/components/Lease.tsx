@@ -1,7 +1,7 @@
 import { Button, Option, Select } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 
-import configAPI from "../services/configAPI.json";
+import { API } from "../services/configAPI";
 import apiClient from "../services/apiClient";
 import { getUserId } from "../services/userService";
 import axios from "axios";
@@ -48,7 +48,7 @@ export default function Lease({ data }: { data: string }) {
     formData.append(`file`, pdfFiles);
     try { 
       const res = await apiClient(
-        `${configAPI.api_url.localHost}/Contract/uploadFilePDF/${data}`,
+        `${API}/Contract/uploadFilePDF/${data}`,
         {
           method: "POST",
           data: formData,
@@ -64,7 +64,7 @@ export default function Lease({ data }: { data: string }) {
   {
     try { 
       const res = await apiClient(
-        `${configAPI.api_url.localHost}/Contract/getFilePDF/${data}`,
+        `${API}/Contract/getFilePDF/${data}`,
         {
           responseType: 'blob',
           method: "GET",
@@ -101,7 +101,6 @@ export default function Lease({ data }: { data: string }) {
           type="file"
           className="sr-only"
           id="inputImg"
-          
           onChange={handleFileChange} // ใส่โค้ดการจัดการเมื่อมีการเลือกไฟล์ที่เปลี่ยนแปลงที่นี่
           
         />

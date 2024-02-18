@@ -1,7 +1,0 @@
-{
-  "api_url": {
-    "localHost": "https://localhost:7282/Api",
-    "imgHost": "http://localhost:5048/Images",
-    "production": ""
-  }
-}

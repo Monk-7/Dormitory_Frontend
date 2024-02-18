@@ -13,7 +13,7 @@ import {
 
 import React, { useState, useEffect } from "react";
 import apiClient from "../services/apiClient";
-import configAPI from "../services/configAPI.json";
+import { API } from "../services/configAPI";
 import { getUserId } from "../services/userService";
 
 import jsonData from "../jsonTest/Meter.json";
@@ -116,7 +116,7 @@ export default function Meter() {
 
     console.log(updatedMeterData);
     try {
-      const res = await apiClient(`${configAPI.api_url.localHost}/Meter/UpdateMeter`, {
+      const res = await apiClient(`${API}/Meter/UpdateMeter`, {
         method: 'PUT',
         data: updatedMeterData,
       });
@@ -146,7 +146,7 @@ export default function Meter() {
       {
         try {
 
-          const res = await apiClient(`${configAPI.api_url.localHost}/Meter/GetAndCreateMeter/${id}`, {
+          const res = await apiClient(`${API}/Meter/GetAndCreateMeter/${id}`, {
             method: 'GET',
           });
           setPrevMeterData(res.data);

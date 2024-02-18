@@ -36,7 +36,7 @@ import PaymentHistory from "../components/PaymentHistory";
 import Report from "../components/Report";
 
 import apiClient from "../services/apiClient";
-import configAPI from "../services/configAPI.json";
+import { API } from "../services/configAPI";
 import { getUserId } from "../services/userService";
 
 import jsonData from "../jsonTest/Building.json";
@@ -177,7 +177,7 @@ export default function Management() {
     const id = getUserId();
     if(id !== '') {
       try {
-        const res = await apiClient(`${configAPI.api_url.localHost}/Dormitory/GetAllDormitory/${id}`, {
+        const res = await apiClient(`${API}/Dormitory/GetAllDormitory/${id}`, {
           method: 'GET',
         });
         setDormitoryAPI(res.data);
@@ -190,7 +190,7 @@ export default function Management() {
   const getBuildData = async (_dorm:dormitoryInterface[]) => {
       try {
         const buildingPromises = _dorm && _dorm.map(async (dormitory) => {
-          const res = await apiClient(`${configAPI.api_url.localHost}/Building/GetAllBuilding/${dormitory.idDormitory}`, {
+          const res = await apiClient(`${API}/Building/GetAllBuilding/${dormitory.idDormitory}`, {
             method: 'GET',
           });
           return res.data;
@@ -206,7 +206,7 @@ export default function Management() {
   const getRoomStatusData = async (_building: buildingInterface[]) => {
     try {
       const buildingAndRoomPromises = _building && _building.map(async (building) => {
-        const res = await apiClient(`${configAPI.api_url.localHost}/Room/GetAllRoomStatus/${building.idBuilding}`, {
+        const res = await apiClient(`${API}/Room/GetAllRoomStatus/${building.idBuilding}`, {
           method: 'GET',
         });
   

@@ -11,7 +11,7 @@ import { useToggle } from "../../hooks/useToggle";
 import React, { useState, useEffect } from "react";
 
 import apiClient from "../../services/apiClient";
-import configAPI from "../../services/configAPI.json";
+import {API} from "../../services/configAPI";
 
 
 interface roomInterface {
@@ -39,7 +39,7 @@ export default function AddRoom({ data }: { data: string }) {
       console.log(form);
       try {
         const res = await apiClient(
-          `${configAPI.api_url.localHost}/Room/CreateOneRoom`,
+          `${API}/Room/CreateOneRoom`,
           {
             method: "POST",
             data: form,

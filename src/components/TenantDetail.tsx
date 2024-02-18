@@ -14,7 +14,7 @@ import {
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 import DeletePopup from "./Popup/DeletePopup";
-import configAPI from "../services/configAPI.json";
+import { API } from "../services/configAPI";
 import apiClient from "../services/apiClient";
 
 interface roomInterface {
@@ -71,7 +71,7 @@ export default function TenantDetail({ data }: { data: string }) {
   const getRoom = async () => 
   {
     try {
-      const res = await apiClient(`${configAPI.api_url.localHost}/Room/GetOneRoom/${data}`, {
+      const res = await apiClient(`${API}/Room/GetOneRoom/${data}`, {
         method: 'GET',
       });
       setRoomData(res.data);
@@ -92,7 +92,7 @@ export default function TenantDetail({ data }: { data: string }) {
   const getUser = async () => 
   {
     try {
-      const res = await apiClient(`${configAPI.api_url.localHost}/User/GetUserAllByIdroom/${data}`, {
+      const res = await apiClient(`${API}/User/GetUserAllByIdroom/${data}`, {
         method: 'GET',
       });
       setUserData(res.data);
@@ -104,7 +104,7 @@ export default function TenantDetail({ data }: { data: string }) {
   const getCodeRoom = async (idRoom: string) =>
   {
     try {
-      const res = await apiClient(`${configAPI.api_url.localHost}/Room/CreateCode/${idRoom}`, {
+      const res = await apiClient(`${API}/Room/CreateCode/${idRoom}`, {
         method: 'POST',
       });
       setCodeRoom(res.data);
@@ -124,7 +124,7 @@ export default function TenantDetail({ data }: { data: string }) {
       console.log(form);
       try {
         const res = await apiClient(
-          `${configAPI.api_url.localHost}/Room/UpdateRoom`,
+          `${API}/Room/UpdateRoom`,
           {
             method: "PUT",
             data: form,
