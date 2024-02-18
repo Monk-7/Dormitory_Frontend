@@ -26,8 +26,9 @@ import {
 import { BuildingOffice2Icon } from "@heroicons/react/24/solid";
 import { checkLogin, login, registerFunc } from "../services/authService";
 import apiClient from "../services/apiClient";
-import { getCurrentUser } from "../services/userService";
+import { getCurrentUser, getUserId } from "../services/userService";
 import AddDorm from "./Popup/AddDorm";
+import { API } from "../services/configAPI";
 
 const profileMenuItems = [
   {
@@ -70,6 +71,7 @@ interface userInterface {
 export function StickyNavbar() {
   const [openNav, setOpenNav] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
+  const [proFileUrl, setProFileUrl] = useState<string>();
   const [userData, setUserData] = useState<userInterface>();
 
   const checkAuth = async () => {
@@ -78,18 +80,31 @@ export function StickyNavbar() {
       setIsAuth(true);
       const data = getCurrentUser();
       setUserData(data);
+      await getImgProFile(data.userID);
     }
   };
 
-  // const getUserData = async () =>
-  // {
-  //   const data = await getCurrentUser();
-  //   const res = await apiClient(`https://localhost:7282/api/User/getUser/${data.userID}`, {
-  //     method: 'GET',
-  //   });
-  //   setUserData(res.data);
-  // }
-
+  const getImgProFile = async (idUser : string) =>
+  {
+    try{
+      const res = await apiClient(`${API}/User/getProFile/${idUser}`, {
+        responseType: 'blob',
+        method: 'GET'
+      });
+      
+      const blob = new Blob([res.data]);
+      const url = URL.createObjectURL(blob);
+      setProFileUrl(url);
+      localStorage.setItem('ProFileURL',url);
+    }
+    catch(error)
+    {
+      console.log(error);
+      setProFileUrl("https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80");
+      localStorage.setItem('ProFileURL', "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80");
+    }
+  }
+  
   useEffect(() => {
     checkAuth();
   }, []);
@@ -119,7 +134,7 @@ export function StickyNavbar() {
               size="sm"
               alt="tania andrew"
               className="border border-gray-900 p-0.5"
-              src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
+              src={proFileUrl}
             />
             <span className="normal-case mx-2 text-sm hidden md:block">
               {userData?.firstname} {userData?.lastname}

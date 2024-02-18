@@ -1,4 +1,5 @@
 import apiClient from '../services/apiClient';
+import { API } from './configAPI';
 
 interface loginProp {
   username: string;
@@ -18,7 +19,7 @@ interface registerProp {
 export const checkLogin = async () => {
   const token: string = localStorage.getItem('token') || '';
   try {
-    const res = await apiClient('https://localhost:7282/Api/User/ValiDateToken', {
+    const res = await apiClient(`${API}/User/ValiDateToken`, {
       method: 'GET',
     });
     if (res.status === 401 || res.status === 403) {
@@ -33,7 +34,7 @@ export const checkLogin = async () => {
 export const login = async (body: loginProp) => {
   
   try {
-      const res = await apiClient('https://localhost:7282/Api/User/Login', {
+      const res = await apiClient(`${API}/User/Login`, {
         method: 'POST',
         data: body,
       });
@@ -47,7 +48,7 @@ export const login = async (body: loginProp) => {
 };
 export const registerFunc = async (body: registerProp) => {
   try {
-    const res = await apiClient('https://localhost:7282/Api/User/Register', {
+    const res = await apiClient(`${API}/User/Register`, {
       method: 'POST',
       data: body,
     });

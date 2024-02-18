@@ -11,7 +11,7 @@ import { useToggle } from "../../hooks/useToggle";
 import React, { useState, useEffect } from "react";
 
 import apiClient from "../../services/apiClient";
-import configAPI from "../../services/configAPI.json";
+import { API } from "../../services/configAPI";
 
 interface buildingInterface {
   idDormitory:string;
@@ -71,7 +71,7 @@ export default function AddBuilding({ data }: { data: string }) {
 
       console.log(formBuilding);
       try {
-        const resBuilding = await apiClient(`${configAPI.api_url.localHost}/Building/CreateBuilding`,
+        const resBuilding = await apiClient(`${API}/Building/CreateBuilding`,
           {
             method: "POST",
             data: formBuilding,
@@ -88,7 +88,7 @@ export default function AddBuilding({ data }: { data: string }) {
           parkingPrice: 0
         }
         try {
-          const resRoom = await apiClient(`${configAPI.api_url.localHost}/Room/CreateRoom`,
+          const resRoom = await apiClient(`${API}/Room/CreateRoom`,
             {
               method: "POST",
               data: _formRoom,
@@ -110,11 +110,7 @@ export default function AddBuilding({ data }: { data: string }) {
   useEffect(() => {
     setFormBuilding(prevForm => ({ ...prevForm, idDormitory : data}));
   }, []);
-
-  const check = () => {
-    console.log(data);
-  }
-
+  
   return (
     <div>
       
@@ -124,7 +120,6 @@ export default function AddBuilding({ data }: { data: string }) {
         className="cursor-pointer"
       />
       <Dialog size="sm" open={isOpen} handler={setIsOpen} className="p-4 ">
-      {/* <button onClick={check}>check</button> */}
         <DialogHeader className="p-2">Create new building</DialogHeader>
         <DialogBody className="p-2">
           <p>You need to enter the detail for create your dormitory.</p>

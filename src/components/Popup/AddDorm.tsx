@@ -11,7 +11,7 @@ import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
 import { useToggle } from "../../hooks/useToggle";
 import apiClient from "../../services/apiClient";
-import configAPI from "../../services/configAPI.json";
+import { API } from "../../services/configAPI";
 import { getUserId } from "../../services/userService";
 
 interface dormitoryInterface {
@@ -47,7 +47,7 @@ export default function AddDorm() {
       console.log(form);
       try {
         const res = await apiClient(
-          `${configAPI.api_url.localHost}/Dormitory/CreateDormitory`,
+          `${API}/Dormitory/CreateDormitory`,
           {
             method: "POST",
             data: form,

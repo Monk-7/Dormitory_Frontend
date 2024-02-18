@@ -3,7 +3,7 @@ import { Button, Option, Select, Typography } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 
 import apiClient from "../services/apiClient";
-import configAPI from "../services/configAPI.json";
+import { API } from "../services/configAPI";
 
 const month = [
   "January",
@@ -35,7 +35,7 @@ export default function Report({ data }: { data: string }) {
   const getProblem = async () => 
   {
     try {
-      const res = await apiClient(`${configAPI.api_url.localHost}/Problem/GetProblemAllByIdRoom/${data}`, {
+      const res = await apiClient(`${API}/Problem/GetProblemAllByIdRoom/${data}`, {
         method: 'GET',
       });
       setProblemData(res.data);
