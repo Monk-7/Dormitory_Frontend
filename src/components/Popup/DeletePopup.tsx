@@ -16,7 +16,7 @@ export default function DeletePopup({ open, handleDialog }: any) {
           Are you sure?
         </Typography>
         <Typography className="text-center font-normal">
-          Do you really want to delete this room? Details within this room
+          Do you really want to delete this dormitory? Details within this dormitory
           cannot be recovered later.
         </Typography>
         <div className="flex justify-end gap-5">

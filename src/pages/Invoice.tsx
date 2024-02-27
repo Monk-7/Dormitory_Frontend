@@ -316,7 +316,7 @@ export default function Invoice() {
       </div>
       ))}
       <div className="flex justify-end mt-5">
-        <Button className="flex items-center gap-2">
+        <Button onClick ={() => {alert("ส่งใบแจ้งหนี้สำเร็จ")}}className="flex items-center gap-2">
           <PaperAirplaneIcon className="h-5 w-5" />
           Send All
         </Button>

@@ -1,5 +1,4 @@
 import React from "react";
-import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
 import {
   Card,
   CardBody,
@@ -7,32 +6,190 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
+import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
+import DashbordCard from "../components/Detail/DashbordCard";
 
-interface ChartConfig {
-  type: string;
-  width: number;
-  height: number;
-  series: number[];
+const BarchartConfig = {
+  type: "bar",
+  height: 240,
+  series: [
+    {
+      name: "Sales",
+      data: [100, 250, 30, 50, 40, 300, 320, 500, 350, 200, 230, 500],
+    },
+  ],
   options: {
     chart: {
       toolbar: {
-        show: boolean;
-      };
-    };
+        show: false,
+      },
+    },
     title: {
-      show: string;
-    };
+      show: "",
+    },
     dataLabels: {
-      enabled: boolean;
-    };
-    colors: string[];
-    legend: {
-      show: boolean;
-    };
-  };
-}
+      enabled: false,
+    },
+    colors: ["#020617"],
+    plotOptions: {
+      bar: {
+        columnWidth: "40%",
+        borderRadius: 2,
+      },
+    },
+    xaxis: {
+      axisTicks: {
+        show: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+      labels: {
+        style: {
+          colors: "#616161",
+          fontSize: "12px",
+          fontFamily: "inherit",
+          fontWeight: 400,
+        },
+      },
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ],
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: "#616161",
+          fontSize: "12px",
+          fontFamily: "inherit",
+          fontWeight: 400,
+        },
+      },
+    },
+    grid: {
+      show: true,
+      borderColor: "#dddddd",
+      strokeDashArray: 5,
+      xaxis: {
+        lines: {
+          show: true,
+        },
+      },
+      padding: {
+        top: 5,
+        right: 20,
+      },
+    },
+    fill: {
+      opacity: 0.8,
+    },
+    tooltip: {
+      theme: "dark",
+    },
+  },
+};
 
-const chartConfig: ChartConfig = {
+const LinechartConfig = {
+  type: "line",
+  height: 240,
+  series: [
+    {
+      name: "Sales",
+      data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
+    },
+  ],
+  options: {
+    chart: {
+      toolbar: {
+        show: false,
+      },
+    },
+    title: {
+      show: "",
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    colors: ["#020617"],
+    stroke: {
+      lineCap: "round",
+      curve: "smooth",
+    },
+    markers: {
+      size: 0,
+    },
+    xaxis: {
+      axisTicks: {
+        show: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+      labels: {
+        style: {
+          colors: "#616161",
+          fontSize: "12px",
+          fontFamily: "inherit",
+          fontWeight: 400,
+        },
+      },
+      categories: [
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ],
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: "#616161",
+          fontSize: "12px",
+          fontFamily: "inherit",
+          fontWeight: 400,
+        },
+      },
+    },
+    grid: {
+      show: true,
+      borderColor: "#dddddd",
+      strokeDashArray: 5,
+      xaxis: {
+        lines: {
+          show: true,
+        },
+      },
+      padding: {
+        top: 5,
+        right: 20,
+      },
+    },
+    fill: {
+      opacity: 0.8,
+    },
+    tooltip: {
+      theme: "dark",
+    },
+  },
+};
+
+const PiechartConfig = {
   type: "pie",
   width: 280,
   height: 280,
@@ -56,54 +213,72 @@ const chartConfig: ChartConfig = {
   },
 };
 
-interface ChartCardProps {
-  title: string;
-  description: string;
-}
-
-const ChartCard: React.FC<ChartCardProps> = ({ title, description }) => {
-  return (
-    <Card className="w-80">
-      <CardHeader
-        floated={false}
-        shadow={false}
-        color="transparent"
-        className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
-      >
-        <div className="w-max rounded-lg bg-gray-900 p-5 text-white">
-          <Square3Stack3DIcon className="h-6 w-6" />
-        </div>
-        <div>
-          <Typography variant="h6" color="blue-gray">
-            {title}
-          </Typography>
-          <Typography
-            variant="small"
-            color="gray"
-            className="max-w-sm font-normal"
-          >
-            {description}
-          </Typography>
-        </div>
-      </CardHeader>
-      <CardBody className="px-2 pb-0">
-        <Chart {...chartConfig} />
-      </CardBody>
-    </Card>
-  );
-};
-
 export default function Dashboard() {
   return (
-    <div>
-      <ChartCard
-        title="Bar Chart"
-        description="Visualize your data in a simple way using the @material-tailwind/react chart plugin."
-      />
-      <ChartCard
-        title="Line Chart"
-        description="Visualize your data in a simple way using the @material-tailwind/react chart plugin."
-      />
+    <div className="mx-5 md:mx-10 mt-5 mb-10 min-w-[500px]">
+      <Typography variant="h5" className="mb-5">
+        Dashboard
+      </Typography>
+      <div className="mb-5">
+        <DashbordCard />
+      </div>
+      <Card className="mb-5">
+        <CardHeader
+          floated={false}
+          shadow={false}
+          color="transparent"
+          className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
+        >
+          <div>
+            <Typography variant="h6" className="mb-1 ">
+              Dashboard
+            </Typography>
+
+            <Typography
+              variant="small"
+              color="gray"
+              className="max-w-sm font-normal mb-3"
+            >
+              Visualize your data in a simple way using the
+              @material-tailwind/react chart plugin.
+            </Typography>
+          </div>
+        </CardHeader>
+        <CardBody className="px-2 pb-0  w-full">
+          <Chart {...BarchartConfig} />
+        </CardBody>
+      </Card>
+      <Card>
+        <CardHeader
+          floated={false}
+          shadow={false}
+          color="transparent"
+          className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
+        >
+          <div>
+            <Typography variant="h6" className="mb-1 ">
+              Dashboard
+            </Typography>
+
+            <Typography
+              variant="small"
+              color="gray"
+              className="max-w-sm font-normal mb-3"
+            >
+              Visualize your data in a simple way using the
+              @material-tailwind/react chart plugin.
+            </Typography>
+          </div>
+        </CardHeader>
+        <div className="flex justify-between ">
+          <CardBody className="px-2 pb-0 w-full">
+            <Chart {...LinechartConfig} />
+          </CardBody>
+          <CardBody className="px-2 pb-0 ">
+            <Chart {...PiechartConfig} />
+          </CardBody>
+        </div>
+      </Card>
     </div>
   );
 }

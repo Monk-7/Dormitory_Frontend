@@ -106,7 +106,7 @@ export default function Lease({ data }: { data: string }) {
         />
         <label
           htmlFor="inputImg"
-          className="cursor-pointer py-2 px-4 bg-gradient-to-r from-blue-gray-900 to-blue-gray-900 text-white rounded-md flex items-center gap-3"
+          className="cursor-pointer py-1 px-3 rounded-md font-semibold text-sm bg-[#FFBF73] hover:bg-[#F18C48] text-b flex items-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +130,7 @@ export default function Lease({ data }: { data: string }) {
         <iframe src={pdfUrl} width="100%" height="410" />
       </div>
       <div className="flex justify-end mt-5">
-        <Button onClick={sendContractData}>Save</Button>
+        <Button onClick={sendContractData} className="bg-prim hover:bg-prim2 text-a">Save</Button>
       </div>
     </div>
   );

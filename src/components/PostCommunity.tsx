@@ -6,6 +6,8 @@ import apiClient from "../services/apiClient";
 
 import { EllipsisHorizontalIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import JSZip from "jszip";
+import Comment from "./Comment";
+import { getUserId } from "../services/userService";
 
 const img = [
   {
@@ -31,6 +33,17 @@ interface postInterface {
   timesTamp: Date;
 }
 
+interface getCommentInterface {
+
+  idComment:string;
+  idCommunity:string;
+  idUser: string;
+  fullName: string;
+  category: string;
+  details: string;
+  timesTamp: string;
+}
+
 export default function PostCommunity({data}:{data:string}) {
 
   const [visibleImages, setVisibleImages] = useState(img);
@@ -40,7 +53,12 @@ export default function PostCommunity({data}:{data:string}) {
   const [postData, setPostData] = useState<postInterface>();
   const [timePost, setTimePost] = useState<string>();
   const [imageUrl, setImageUrl] = useState([]);
+  const [proFileUrlPost, setProFileUrlPost] = useState<string>();
   const [proFileUrl, setProFileUrl] = useState<string>();
+
+  const [commentData, setCommentData] = useState<getCommentInterface[]>([]);
+  const [formComment, setFormComment] = useState<string>();
+
 
   const showMoreImages = () => {
     const remainingImages = images.slice(
@@ -138,12 +156,12 @@ export default function PostCommunity({data}:{data:string}) {
       
       const blob = new Blob([res.data]);
       const url = URL.createObjectURL(blob);
-      setProFileUrl(url);
+      setProFileUrlPost(url);
     }
     catch(error)
     {
       console.log(error);
-      setProFileUrl("https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80");
+      setProFileUrlPost("https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80");
     }
   }
 
@@ -165,11 +183,54 @@ export default function PostCommunity({data}:{data:string}) {
     catch (error) {
       console.log(error);
     }
+  };
 
+  const getComment = async () => {
+    try {
+      const res = await apiClient(
+        `${API}/Comment/GetAllComment/${data}`,
+        {
+          method: "GET",
+        }
+      );
+      setCommentData(res.data)
+      setFormComment('');
+      //console.log(res.data);
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+
+  const postComment = async () => {
+    try {
+      const idUser = getUserId();
+      const form = {
+        idCommunity : data,
+        idUser : idUser,
+        details : formComment
+      }
+      const res = await apiClient(
+        `${API}/Comment/CreateComment`,
+        {
+          method: "POST",
+          data:form
+        }
+      );
+      getComment();
+      console.log(res);
+    }
+    catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(()=>{
     getPost();
+    getComment();
+    const url = localStorage.getItem('ProFileURL') || '';
+    setProFileUrl(url);
+
   },[data])
 
   return(
@@ -178,7 +239,7 @@ export default function PostCommunity({data}:{data:string}) {
         <div className="flex items-center">
           <img
             className="h-10 w-10 rounded-full object-cover object-center"
-            src={proFileUrl}
+            src={proFileUrlPost}
             alt="nature image"
           />
           <div className="ml-5">
@@ -218,28 +279,20 @@ export default function PostCommunity({data}:{data:string}) {
         <Typography variant="small">comments</Typography>
       </div>
       <div className="border" />
-      <div className="flex mt-5">
-        <img
-          className="h-9 w-9 rounded-full object-cover object-center"
-          src="https://images.unsplash.com/photo-1682407186023-12c70a4a35e0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2832&q=80"
-          alt="nature image"
-        />
-        <div className="ml-5">
-          <Typography variant="small" className="font-bold">
-            The Room52 Apartment
-          </Typography>
-          <Typography variant="small">2 hours ago</Typography>
-        </div>
-      </div>
+      {commentData && commentData.map((comment) => (
+        <Comment data = {comment}/>
+      ))}
 
       <div className="flex items-center mt-5">
         <img
           className="h-9 w-9 rounded-full object-cover object-center"
-          src="https://images.unsplash.com/photo-1682407186023-12c70a4a35e0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2832&q=80"
+          src={proFileUrl}
           alt="nature image"
         />
         <div className="flex ml-5 mr-2 w-full">
           <Input
+            onChange={(event)=> {setFormComment(event.currentTarget.value)}}
+            value={formComment}
             type="text"
             placeholder="Comment..."
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
@@ -248,7 +301,7 @@ export default function PostCommunity({data}:{data:string}) {
             }}
           />
         </div>
-        <IconButton className="min-w-[40px] h-10">
+        <IconButton onClick={postComment} className="min-w-[40px] h-10">
           <PaperAirplaneIcon className="w-5 h-5" />
         </IconButton>
       </div>

@@ -131,7 +131,9 @@ export default function TenantDetail({ data }: { data: string }) {
           }
         );
         console.log(res);
-        window.location.reload();
+
+        //window.location.reload();
+        getRoom();
       } catch (error) {
         console.log(error);
       }
@@ -155,7 +157,7 @@ export default function TenantDetail({ data }: { data: string }) {
   return (
     <div className="text-sm">
       
-      <button onClick={check}>CHECK</button>
+      {/* <button onClick={check}>CHECK</button> */}
       <Typography variant="h6">Tenant Details</Typography>
       {userData?.length !== 0 ? userData && userData.map((user,index) => (
         <div >
@@ -264,11 +266,11 @@ export default function TenantDetail({ data }: { data: string }) {
           className="focus:shadow-none"
           onClick={handleOpenDelDialog}
         >
-          Delete Room
+          Delete Room 
         </Button>
         <DeletePopup open={openDelDialog} handleDialog={handleOpenDelDialog} />
         <div className="flex gap-2">
-          <Button onClick={() => {handleOpenGenCode(); getCodeRoom(roomData?.idRoom);}} className=" bg-gray-100 text-black shadow-none hover:shadow-none">
+          <Button onClick={() => {handleOpenGenCode(); getCodeRoom(roomData?.idRoom);}} className=" bg-[#FEF167] hover:bg-[#fcec3f] text-b shadow-2 hover:shadow-sm">
             Gen code
           </Button>
           <Dialog size="xs" open={openGenCode} handler={handleOpenGenCode}>
@@ -276,12 +278,12 @@ export default function TenantDetail({ data }: { data: string }) {
             <Typography variant="h4" color="black">
               Your Code
             </Typography>
-            <Typography variant="h5" color="black">
+            <Typography variant="h5" color="black" className="bg-prim text-a rounded-sm px-5 py-2">
               {codeRoom}
             </Typography>
             </DialogBody>
           </Dialog>
-          <Button onClick={handleUpdateData}>Save</Button>
+          <Button onClick={handleUpdateData} className="bg-prim hover:bg-prim2 text-a">Save</Button>
         </div>
       </div>
 
