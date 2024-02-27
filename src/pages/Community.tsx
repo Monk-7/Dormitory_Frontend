@@ -46,7 +46,7 @@ interface communityIdInterface {
 
 
 export default function Community() {
-  const [selected, setSelected] = useState(1);
+  const [selected, setselected] = useState(1);
   const [categoryPost, setCategoryPost] = useState('public');
   const [postData, setPostData] = useState<string[]>([]);
 
@@ -79,12 +79,32 @@ export default function Community() {
           }
         );
         setPostData(res.data);
-        setCategoryPost('Apartment');
-        console.log(res.data);
+        setCategoryPost('apartment');
+        //console.log(res.data);
       } catch (error) {
         console.log(error);
       }
     }
+  };
+
+  const getDataPostAnnouncement = () => {
+    // const idUser = getUserId();
+    // if (idUser !== "") {
+    //   try {
+    //     const res = await apiClient(
+    //       `${API}/Community/GetPostApartment/${idUser}`,
+    //       {
+    //         method: "GET",
+    //       }
+    //     );
+    //     setPostData(res.data);
+    //     setCategoryPost('apartment');
+    //     //console.log(res.data);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // }
+    setPostData([]);
   };
 
   useEffect(() => {
@@ -99,19 +119,19 @@ export default function Community() {
           <List className="text-sm">
             <ListItem
               selected={selected === 1}
-              // onClick={() => {setSelectedItem(1); getDataPostPublic();}}
+              onClick={() => {setselected(1); getDataPostPublic();}}
             >
               Public
             </ListItem>
             <ListItem
               selected={selected === 2}
-              // onClick={() =>{setSelectedItem(2); getDataPostApartment();}}
+              onClick={() =>{setselected(2); getDataPostApartment();}}
             >
               My Apartment
             </ListItem>
             <ListItem
               selected={selected === 3}
-              //onClick={() => setSelectedItem(3)}
+              onClick={() => {setselected(3); getDataPostAnnouncement();}}
             >
               Announcement
             </ListItem>

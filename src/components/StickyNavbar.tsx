@@ -29,6 +29,7 @@ import apiClient from "../services/apiClient";
 import { getCurrentUser, getUserId } from "../services/userService";
 import AddDorm from "./Popup/AddDorm";
 import { API } from "../services/configAPI";
+import Notify from "./Detail/Notify";
 
 const profileMenuItems = [
   {
@@ -127,7 +128,7 @@ export function StickyNavbar() {
         <MenuHandler>
           <Button
             variant="text"
-            className="flex items-center gap-1 rounded-full py-0.5 pr-0.5 pl-0.5 lg:ml-auto bg-gray-100 text-black bg-opacity-80"
+            className="flex items-center gap-1 rounded-full py-0.5 pr-0.5 pl-0.5 lg:ml-auto  hover:bg-navy2 text-d "
           >
             <Avatar
               variant="circular"
@@ -185,7 +186,7 @@ export function StickyNavbar() {
     <ul className="my-4 flex flex-col gap-5 lg:my-0 lg:flex-row lg:items-center">
       {isAuth ? (
         Links.map((li) => (
-          <Typography as="li" color="black" className="px-0 lg:px-5 font-bold">
+          <Typography as="li"  className="px-0 lg:px-5 font-bold text-d hover:text-prim">
             <a href={li.path} className="flex items-center">
               {li.name}
             </a>
@@ -198,8 +199,8 @@ export function StickyNavbar() {
   );
 
   return (
-    <Navbar className="sticky top-0 z-[100] h-max max-w-full rounded-none px-5 py-2 md:px-10 md:py-[9px] min-w-[540px]">
-      <div className="flex items-center justify-between text-blue-gray-900">
+    <Navbar className="sticky top-0 z-[100] h-max max-w-full rounded-none px-5 py-2 md:px-10 md:py-[9px] min-w-[540px] bg-navy">
+      <div className="flex items-center justify-between text-d ">
         <div className="flex items-center">
           <Typography
             as="a"
@@ -219,10 +220,9 @@ export function StickyNavbar() {
           {isAuth ? (
             <div className="flex gap-5 items-center">
               <AddDorm />
-              <button>
-                <BellIcon width={24} />
-              </button>
-
+              <button><BellIcon width={24} /></button>
+                {/* <Notify/> */} 
+          
               <ProfileMenu />
             </div>
           ) : (

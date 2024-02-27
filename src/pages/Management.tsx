@@ -152,26 +152,15 @@ interface dormitoryInterface {
 
 export default function Management() {
 
-  const [accordionStates, setAccordionStates] = useState<boolean[]>([]);
-
   const [dormitoryDefaultData, setDormitoryDefaultData] = useState<dormitoryInfoInterface[]>([]);
   const [dormitoryData, setDormitoryData] = useState<dormitoryInfoInterface[]>([]);
   const [dormitoryAPI, setDormitoryAPI] = useState<dormitoryInterface[]>([]);
   const [valueSelectedDormitory, setValueSelectedDormitory] = useState<number>(-1);
 
-  const [idDormitory,setIdDormitory] = useState<string>();
+
   const [roomName,setRoomName] = useState<string>('NO DATA');
   const [idRoom,setIdRoom] = useState<string>('');
 
-  
-
-  const handleToggleAccordion = (index: number) => {
-    setAccordionStates((prevStates) => {
-      const newStates = [...prevStates];
-      newStates[index] = !newStates[index];
-      return newStates;
-    });
-  };
 
   const getDataDorm = async () => {
     const id = getUserId();
@@ -303,19 +292,29 @@ export default function Management() {
     }
   };
 
-  const [open, setOpen] = React.useState(1);
+  const [openAccordionDromIndexes, setOpenAccordionDromIndexes] = useState<boolean[]>([]);
 
-  const handleOpen = (value: any) => setOpen(open === value ? 0 : value);
+  const handleToggleAccordionDorm = (index: number) => {
+    setOpenAccordionDromIndexes((prevState) => {
+      const newState = [...prevState];
+      newState[index] = !prevState[index];
+      return newState;
+    });
+  };
 
-  const check = () =>{
-    // console.log(JSON.stringify(dormitoryData));
-    console.log(dormitoryDefaultData[0]);
-  }
+  const [openAccordionBuildIndexes, setOpenAccordionBuildIndexes] = useState<boolean[]>([]);
+
+  const handleToggleAccordionbuild = (index: number) => {
+    setOpenAccordionBuildIndexes((prevState) => {
+      const newState = [...prevState];
+      newState[index] = !prevState[index];
+      return newState;
+    });
+  };
 
   const setNewDataSelected = (val:number) =>
   {
     const selectedDormitory = dormitoryDefaultData[valueSelectedDormitory];
-
     const selectedBuilding = dormitoryDefaultData[valueSelectedDormitory].buildingInfo[val];
 
     setDormitoryData([{
@@ -387,11 +386,11 @@ export default function Management() {
         </div>
       </div>
       <div className="flex justify-between">
-      <div className="w-full lg:w-[70%]">
+      <div className="w-full lg:w-[70%] ">
           {dormitoryData && dormitoryData.map((dormData,dormIndex) =>
           (
             <Card className="px-5 py-1 mb-5 lg:mr-5 h-fit overflow-auto min-w-[500px]">
-              <Accordion open={open === 1}>
+              <Accordion open={openAccordionDromIndexes[dormIndex]}>
                 <AccordionHeader className="font-Montserrat text-base border-b-0 cursor-default">
                   <div className="flex justify-between w-full mr-[-16px]">
                     <div className="flex gap-4 items-center">
@@ -404,8 +403,8 @@ export default function Management() {
                         <TrashIcon width={22} />
                       </button>
                       <DeletePopup open={openDelDormDialog} handleDialog={handleDelDormDialog} />
-                      <button onClick={() => handleOpen(1)}>
-                        <Icon id={1} open={open} />
+                      <button onClick={() => handleToggleAccordionDorm(dormIndex)}>
+                        <Icon id={dormIndex} open={openAccordionDromIndexes[dormIndex]} />
                       </button>
                     </div>
                   </div>
@@ -415,10 +414,10 @@ export default function Management() {
                     dormData.buildingInfo &&
                     dormData.buildingInfo.map((buildingData, buildingIndex) => (
                       <Card className="px-5 py-1 my-2 h-fit overflow-auto min-w-[500px] border shadow-none">
-                        <Accordion  key={buildingIndex} open={accordionStates[buildingIndex]}>
+                        <Accordion  key={buildingIndex} open={openAccordionBuildIndexes[buildingIndex]}>
                           <AccordionHeader
                             className={`font-Montserrat text-base ${
-                              accordionStates[buildingIndex] === true ? "" : "border-b-0"
+                              openAccordionBuildIndexes[buildingIndex] === true ? "" : "border-b-0"
                             } cursor-default`}
                           >
                             <div className="flex justify-between w-full mr-[-16px]">
@@ -454,9 +453,9 @@ export default function Management() {
                                 </button>
                                 <DeletePopup open={openDelBuildDialog} handleDialog={handleOpenDelBuildDialog} />
                                 <button
-                                  onClick={() => handleToggleAccordion(buildingIndex)}
+                                  onClick={() => handleToggleAccordionbuild(buildingIndex)}
                                 >
-                                  <Icon id={accordionStates[buildingIndex]} open={true} />
+                                  <Icon id={openAccordionBuildIndexes[buildingIndex]} open={true} />
                                 </button>
                                 {/* </div> */}
                               </div>
@@ -468,15 +467,15 @@ export default function Management() {
                               buildingData.roomInfo.map((roomData) => (
                                 <div>
                                   {roomData.isRoomStay ?
-                                    <Card className="flex m-1 h-14 rounded-md justify-center items-center border min-w-[85px] shadow-none bg-teal-400">
+                                    <Card className="flex m-1 h-14 rounded-md justify-center items-center border min-w-[85px] shadow-none bg-prim hover:bg-prim2 ">
                                       <button className="hidden lg:block w-full h-full" onClick={() => {setRoomName(roomData.roomName); setIdRoom(roomData.idRoom);}} >
                                       {roomData.isRoomLatePay ? <ExclamationCircleIcon color="#AE2012" className="absolute top-[-5px] right-[-5px] w-4 h-4"/> 
                                         :
-                                        roomData.isRoomPay ? <CheckCircleIcon color="green" className="absolute top-[-5px] right-[-5px] w-4 h-4"/> 
+                                        roomData.isRoomPay ? <CheckCircleIcon  className="absolute top-[-5px] right-[-5px] w-4 h-4 text-success"  /> 
                                         : 
-                                        <ClockIcon color="#ECB92F" className="absolute top-[-5px] right-[-5px] w-4 h-4"/>
+                                        <ClockIcon  className="absolute top-[-5px] right-[-5px] w-4 h-4 text-clock "/>
                                       }  
-                                        <span className="font-bold text-base text-white">{roomData.roomName}</span>
+                                        <span className="font-bold text-base text-a">{roomData.roomName}</span>
                                       </button>
                                       <button
                                         className="block lg:hidden w-full h-full"
@@ -484,23 +483,23 @@ export default function Management() {
                                       >
                                         {roomData.isRoomLatePay ? <ExclamationCircleIcon color="#AE2012" className="absolute top-[-5px] right-[-5px] w-4 h-4"/> 
                                           :
-                                          roomData.isRoomPay ? <CheckCircleIcon color="green" className="absolute top-[-5px] right-[-5px] w-4 h-4"/> 
+                                          roomData.isRoomPay ? <CheckCircleIcon  className="absolute top-[-5px] right-[-5px] w-4 h-4 text-success " /> 
                                           : 
-                                          <ClockIcon color="#ECB92F" className="absolute top-[-5px] right-[-5px] w-4 h-4"/>
+                                          <ClockIcon  className="absolute top-[-5px] right-[-5px] w-4 h-4 text-clock"/>
                                         }  
                                         <span className="font-bold text-base text-white">{roomData.roomName}</span>
                                       </button>
                                     </Card>
                                   :
-                                  <Card className="flex m-1 h-14 rounded-md justify-center items-center border min-w-[85px] shadow-none">
+                                  <Card className="flex m-1 h-14 rounded-md justify-center items-center border min-w-[85px] shadow-none hover:bg-[#fff595] focus:outline-none focus:ring focus:ring-red-300">
                                     <button className="hidden lg:block w-full h-full" onClick={() => {setRoomName(roomData.roomName); setIdRoom(roomData.idRoom);}} >
-                                      <ClockIcon color="#ECB92F" className="absolute top-[-5px] right-[-5px] w-4 h-4"/> 
+                                      <ClockIcon  className="absolute top-[-5px] right-[-5px] w-4 h-4 text-clock"/> 
                                       <span className="font-bold text-base">{roomData.roomName}</span>
-                                    </button>
+                                    </button>                                    
                                     <button
                                       className="block lg:hidden w-full h-full"
                                       onClick={handleOpenDialog}>            
-                                      <ClockIcon color="#ECB92F" className="absolute top-[-5px] right-[-5px] w-4 h-4"/>                                      
+                                      <ClockIcon color="#ECB92F" className="absolute top-[-5px] right-[-5px] w-4 h-4 text-clock"/>                                      
                                       <span className="font-bold text-base ">{roomData.roomName}</span>
                                     </button>
                                   </Card>
@@ -517,9 +516,9 @@ export default function Management() {
             </Card>
           ))}
         </div>
-        <Card className="hidden lg:block p-5 rounded-md w-[32%] min-w-[400px] h-fit !static">
+        <Card className="hidden lg:block p-5 rounded-md w-[32%] min-w-[400px] h-fit !static ">
           <div className="flex justify-between items-center">
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-4 items-center ">
               <Typography variant="h6" color="black">
                 Room {roomName}
               </Typography>
@@ -528,39 +527,39 @@ export default function Management() {
             <Switch />
           </div>
           <Tabs value="detail">
-            <TabsHeader className="flex items-center mt-5">
+            <TabsHeader className="flex items-center mt-5 bg-prim ">
               {tabsData.map(({ label, value }) => (
-                <Tab key={value} value={value} className="text-xs py-2">
+                <Tab key={value} value={value} className="text-xs px-0 py-1">
                   {label}
                 </Tab>
               ))}
             </TabsHeader>
-            <TabsBody className="!py-0">
-              <TabPanel
+            <TabsBody >
+              <TabPanel 
                 key={tabsData[0].value}
                 value={tabsData[0].value}
-                className="!px-0 !pb-0"
+                
               >
                 <TenantDetail data = {idRoom} />
               </TabPanel>
               <TabPanel
                 key={tabsData[1].value}
                 value={tabsData[1].value}
-                className="!px-0 !pb-0"
+                
               >
                 <Lease data = {idRoom}/>
               </TabPanel>
               <TabPanel
                 key={tabsData[2].value}
                 value={tabsData[2].value}
-                className="!px-0 !pb-0"
+                
               >
                 <PaymentHistory data = {idRoom} />
               </TabPanel>
               <TabPanel
                 key={tabsData[3].value}
                 value={tabsData[3].value}
-                className="!px-0 !pb-0"
+                
               >
                 <Report data = {idRoom} />
               </TabPanel>
@@ -570,7 +569,7 @@ export default function Management() {
         <Dialog
           open={openDialog}
           handler={handleOpenDialog}
-          className="lg:hidden"
+          className="lg:hidden "
         >
           <DialogBody>
             <div className="flex justify-between items-center">
@@ -601,16 +600,16 @@ export default function Management() {
                 <TabPanel
                   key={tabsData[1].value}
                   value={tabsData[1].value}
-                  className="!px-0 !pb-0"
+                  className="!px-0 !pb-0 "
                 >
-                  <Lease />
+                  <Lease data ={idRoom} />
                 </TabPanel>
                 <TabPanel
                   key={tabsData[2].value}
                   value={tabsData[2].value}
                   className="!px-0 !pb-0"
                 >
-                  <PaymentHistory />
+                  <PaymentHistory data ={idRoom} />
                 </TabPanel>
                 <TabPanel
                   key={tabsData[3].value}

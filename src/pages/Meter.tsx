@@ -198,9 +198,9 @@ export default function Meter() {
         </div>
       </div>
       <div className="flex items-center justify-between mt-5 ">
-        <div className="w-80">
+        <div className="w-80  rounded-md">
           <Tabs value="efee">
-            <TabsHeader>
+            <TabsHeader className="bg-prim  ">
               {tabsData.map(({ label, value }) => (
                 <Tab
                   onClick={() => {
@@ -208,6 +208,7 @@ export default function Meter() {
                   }}
                   key={value}
                   value={value}
+                  className="font-semibold text-base text-e"
                 >
                   {label}
                 </Tab>
@@ -216,7 +217,7 @@ export default function Meter() {
           </Tabs>
         </div>
         <Button
-          className="flex gap-3 items-center"
+          className="flex items-center rounded-md font-semibold text-sm bg-[#FFBF73] hover:bg-[#F18C48] text-b flex items-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -253,7 +254,7 @@ export default function Meter() {
                       <Typography
                         variant="small"
                         color="blue-gray"
-                        className="font-normal leading-none opacity-70"
+                        className="font-normal leading-none "
                       >
                         {head}
                       </Typography>
@@ -339,7 +340,7 @@ export default function Meter() {
           </div>
         ))}
       <div className="flex justify-end mt-5">
-        <Button onClick={handleSaveMeterData} >Save</Button>
+        <Button onClick={handleSaveMeterData} className="bg-prim hover:bg-prim2 text-a">Saved successfully</Button>
       </div>
     </div>
   );
