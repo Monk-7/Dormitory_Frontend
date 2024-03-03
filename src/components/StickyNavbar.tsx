@@ -27,7 +27,7 @@ import apiClient from "../services/apiClient";
 import { getCurrentUser, getUserId } from "../services/userService";
 import AddDorm from "./Popup/AddDorm";
 import { API } from "../services/configAPI";
-import Notify from "./Detail/Notify";
+import Notify from "./Popup/NotiButton";
 
 const profileMenuItems = [
   {
@@ -118,7 +118,7 @@ export function StickyNavbar() {
         <MenuHandler>
           <Button
             variant="text"
-            className="flex items-center gap-1 rounded-full py-0.5 pr-0.5 pl-0.5 lg:ml-auto  hover:bg-navy2 text-d "
+            className="flex items-center gap-1 rounded-full py-0.5 pr-0.5 pl-0.5 lg:ml-auto  hover:bg-a text-d  "
           >
             <Avatar
               variant="circular"
@@ -146,20 +146,22 @@ export function StickyNavbar() {
                 key={label}
                 name={label}
                 onClick={menuAction}
-                className={`flex items-center gap-2 rounded ${
+                className={`flex items-center gap-2 hover:bg-prim focus:bg-prim2/[40%] active:bg-prim2/[40%] rounded ${
                   isLastItem
-                    ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                    ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10 "
                     : ""
                 }`}
               >
                 {React.createElement(icon, {
-                  className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
+                  className: `h-4 w-4 text-e ${
+                    isLastItem ? "text-red-500" : ""
+                  }`,
                   strokeWidth: 2,
                 })}
                 <Typography
                   as="span"
                   variant="small"
-                  className="font-normal"
+                  className="font-bold text-e"
                   color={isLastItem ? "red" : "inherit"}
                 >
                   {label}
@@ -192,7 +194,7 @@ export function StickyNavbar() {
   );
 
   return (
-    <Navbar className="sticky top-0 z-[100] h-max max-w-full rounded-none px-5 py-2 md:px-10 md:py-[9px] min-w-[540px] bg-navy">
+    <Navbar className="sticky top-0 z-[100] h-max max-w-full rounded-none px-5 py-2 md:px-10 md:py-[9px] min-w-[540px] bg-a">
       <div className="flex items-center justify-between text-d ">
         <div className="flex items-center">
           <Typography
@@ -220,10 +222,8 @@ export function StickyNavbar() {
                 />
               </button>
               <AddDorm />
-              <button>
-                <BellIcon width={24} />
-              </button>
-              {/* <Notify /> */}
+
+              <Notify />
 
               <ProfileMenu />
             </div>
@@ -234,6 +234,7 @@ export function StickyNavbar() {
                   window.location.href = "/login";
                 }}
                 variant="outlined"
+                color="white"
               >
                 Log in
               </Button>

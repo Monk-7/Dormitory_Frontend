@@ -81,7 +81,11 @@ export default function AddRoom({ data }: { data: string }) {
           </div>
         </DialogBody>
         <DialogFooter className="p-2">
-          <Button variant="filled" className="bg-black" onClick={setIsOpen}>
+          <Button
+            variant="filled"
+            className="text-a bg-prim hover:bg-prim2"
+            onClick={setIsOpen}
+          >
             <span onClick={sendDataAddBuilding}>Continue</span>
           </Button>
         </DialogFooter>

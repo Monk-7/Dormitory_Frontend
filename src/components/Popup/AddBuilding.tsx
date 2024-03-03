@@ -195,7 +195,7 @@ export default function AddBuilding({ data }: { data: string }) {
         <DialogFooter className="p-2">
           <Button
             variant="filled"
-            className="bg-black"
+            className="text-a bg-prim hover:bg-prim2"
             onClick={sendDataAddBuildingAndRoom}
           >
             <span>Continue</span>

@@ -21,57 +21,44 @@ const month = [
 ];
 
 export default function Lease({ data }: { data: string }) {
-
   const [pdfFiles, setPdfFiles] = useState();
   const [pdfUrl, setPdfUrl] = useState(null);
 
   const handleFileChange = (event) => {
-    
     const file = event.target.files[0];
-    if(file.type.startsWith('application/pdf'))
-    {
+    if (file.type.startsWith("application/pdf")) {
       setPdfFiles(file);
-      const blob = new Blob([file], { type: 'application/pdf' });
+      const blob = new Blob([file], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       setPdfUrl(url);
-    }
-    else
-    {
-      alert("PDF File only")
+    } else {
+      alert("PDF File only");
       setPdfFiles(undefined);
     }
   };
 
-  const sendContractData = async () =>
-  {
+  const sendContractData = async () => {
     const formData = new FormData();
     formData.append(`file`, pdfFiles);
-    try { 
-      const res = await apiClient(
-        `${API}/Contract/uploadFilePDF/${data}`,
-        {
-          method: "POST",
-          data: formData,
-        }
-      );
+    try {
+      const res = await apiClient(`${API}/Contract/uploadFilePDF/${data}`, {
+        method: "POST",
+        data: formData,
+      });
       console.log(res);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  const getData = async () =>
-  {
-    try { 
-      const res = await apiClient(
-        `${API}/Contract/getFilePDF/${data}`,
-        {
-          responseType: 'blob',
-          method: "GET",
-        }
-      );
+  const getData = async () => {
+    try {
+      const res = await apiClient(`${API}/Contract/getFilePDF/${data}`, {
+        responseType: "blob",
+        method: "GET",
+      });
       //console.log(res);
-      const blob = new Blob([res.data], { type: 'application/pdf' });
+      const blob = new Blob([res.data], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       setPdfUrl(url);
     } catch (error) {
@@ -79,12 +66,10 @@ export default function Lease({ data }: { data: string }) {
       setPdfFiles(undefined);
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-  
     getData();
-    
   }, [data]);
 
   return (
@@ -102,11 +87,10 @@ export default function Lease({ data }: { data: string }) {
           className="sr-only"
           id="inputImg"
           onChange={handleFileChange} // ใส่โค้ดการจัดการเมื่อมีการเลือกไฟล์ที่เปลี่ยนแปลงที่นี่
-          
         />
         <label
           htmlFor="inputImg"
-          className="cursor-pointer py-1 px-3 rounded-md font-semibold text-sm bg-[#FFBF73] hover:bg-[#F18C48] text-b flex items-center gap-2"
+          className="cursor-pointer py-1 px-3 rounded-md font-medium text-sm bg-black/[.8] hover:bg-black text-white flex items-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -124,13 +108,17 @@ export default function Lease({ data }: { data: string }) {
           </svg>
           {pdfFiles ? <span>File Ready</span> : <span>Upload</span>}
         </label>
-        
       </div>
       <div className="flex w-full border rounded mt-5 p-5 h-[60vh] lg:h-96 items-center justify-center">
         <iframe src={pdfUrl} width="100%" height="410" />
       </div>
       <div className="flex justify-end mt-5">
-        <Button onClick={sendContractData} className="bg-prim hover:bg-prim2 text-a">Save</Button>
+        <Button
+          onClick={sendContractData}
+          className="bg-prim hover:bg-prim2 text-a"
+        >
+          Save
+        </Button>
       </div>
     </div>
   );

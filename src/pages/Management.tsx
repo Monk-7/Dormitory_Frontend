@@ -366,12 +366,12 @@ export default function Management() {
             <Typography variant="h5" className="mr-5">
               Management
             </Typography>
-            <div className="block md:hidden">
+            <div className="block md:hidden gap-5 w-[30%]">
               <Popover placement="bottom-end">
                 <PopoverHandler>
-                  <AdjustmentsHorizontalIcon className="w-6 cursor-pointer" />
+                  <AdjustmentsHorizontalIcon className="w-6 cursor-pointer " />
                 </PopoverHandler>
-                <PopoverContent className="flex flex-col gap-2">
+                <PopoverContent className="flex flex-col gap-2 ">
                   <Select
                     label="Select Domitory"
                     onChange={(val) => {
@@ -382,7 +382,7 @@ export default function Management() {
                     {dormitoryDefaultData &&
                       dormitoryDefaultData.map((dormData, dormIndex) => (
                         <Option key={dormIndex} value={dormIndex.toString()}>
-                          Dormitory {dormData.dormitoryName}
+                          {dormData.dormitoryName}
                         </Option>
                       ))}
                   </Select>
@@ -414,7 +414,7 @@ export default function Management() {
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="hidden md:flex gap-2">
+            <div className="hidden md:flex gap-5 w-[30%]">
               <Select
                 label="Select Domitory"
                 onChange={(val) => {
@@ -425,7 +425,7 @@ export default function Management() {
                 {dormitoryDefaultData &&
                   dormitoryDefaultData.map((dormData, dormIndex) => (
                     <Option key={dormIndex} value={dormIndex.toString()}>
-                      Dormitory {dormData.dormitoryName}
+                      {dormData.dormitoryName}
                     </Option>
                   ))}
               </Select>
@@ -464,7 +464,7 @@ export default function Management() {
                       <AccordionHeader className="font-Montserrat text-base border-b-0 cursor-default">
                         <div className="flex justify-between w-full mr-[-16px]">
                           <div className="flex gap-4 items-center">
-                            Dormitory {dormData.dormitoryName}
+                            {dormData.dormitoryName}
                           </div>
                           <div className="flex gap-4">
                             <AddBuilding data={dormData.idDormitory} />
@@ -675,12 +675,12 @@ export default function Management() {
                 </div>
               </div>
               <Tabs value="detail">
-                <TabsHeader className="flex items-center mt-5 bg-prim">
+                <TabsHeader className="flex items-center mt-5 bg-prim/[70%] ">
                   {tabsData.map(({ label, value }) => (
                     <Tab
                       key={value}
                       value={value}
-                      className="text-xs px-0 py-2.5"
+                      className="text-[13px] font-bold text-e px-0 py-2.5"
                     >
                       {label}
                     </Tab>

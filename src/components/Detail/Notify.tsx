@@ -5,7 +5,7 @@ import { BellIcon, BoltIcon, MegaphoneIcon } from "@heroicons/react/24/outline";
 export default function Notify() {
   return (
     <div className="flex flex-col gap-2 w-[280px]">
-      <MenuItem className="flex items-center justify-between ">
+      <MenuItem className="flex items-center justify-between cursor-pointer">
         <div className="flex item-center justify-between w-full">
           <div className="flex bg-red-300 p-1 item-center ">
             <svg

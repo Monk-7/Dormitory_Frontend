@@ -31,7 +31,7 @@ module.exports = withMT({
         som2: "#EA8F45",
         c: "#190B02",
         navy: "#060023",
-        navy2: "#04001D",
+        navy2: "#454364",
         d: "#ffffff",
         tao: "#E8E8E8",
         tao2: "#B5B5B5",

@@ -21,20 +21,20 @@ import { getUserId } from "../services/userService";
 import { useEffect, useState } from "react";
 
 interface invoiceInterface {
-  idInvoice: string,
-  idRoom: string,
-  roomName: number,
-  roomPrice: number,
-  electricityPrice: number,
-  waterPrice: number,
-  furniturePrice: number,
-  internetPrice: number,
-  parkingPrice: number,
-  other: number,
-  total: number,
-  dueDate : Date,
-  timesTamp : Date,
-  status : boolean
+  idInvoice: string;
+  idRoom: string;
+  roomName: number;
+  roomPrice: number;
+  electricityPrice: number;
+  waterPrice: number;
+  furniturePrice: number;
+  internetPrice: number;
+  parkingPrice: number;
+  other: number;
+  total: number;
+  dueDate: Date;
+  timesTamp: Date;
+  status: boolean;
 }
 
 interface getInvoiceInterface {
@@ -42,33 +42,34 @@ interface getInvoiceInterface {
   idBuilding: string;
   buildingName: string;
   dormitoryName: string;
-  invoiceAll : invoiceInterface[]
+  invoiceAll: invoiceInterface[];
 }
 
 export default function Invoice() {
-
   const [invioceData, setInvioceData] = useState<getInvoiceInterface[]>([]);
-  const [invioceDefaultData, setInvioceDefaultData] = useState<getInvoiceInterface[]>([]);
+  const [invioceDefaultData, setInvioceDefaultData] = useState<
+    getInvoiceInterface[]
+  >([]);
 
-  const [selectedDormitoryId, setSelectedDormitoryId] = useState<string>('');
+  const [selectedDormitoryId, setSelectedDormitoryId] = useState<string>("");
 
   const getDataInvoice = async () => {
     const id = getUserId();
-    if(id !== '') {
+    if (id !== "") {
       try {
         const res = await apiClient(`${API}/Meter/GetAndCreateMeter/${id}`, {
-          method: 'GET',
+          method: "GET",
         });
 
         const meterData = {
-          idUser : id,
-          meterAll : res.data
-        }
+          idUser: id,
+          meterAll: res.data,
+        };
 
         try {
           const resInvoice = await apiClient(`${API}/Invoice/CreateInvoice`, {
-            method: 'POST',
-            data: meterData
+            method: "POST",
+            data: meterData,
           });
           setInvioceData(resInvoice.data);
           setInvioceDefaultData(resInvoice.data);
@@ -79,12 +80,10 @@ export default function Invoice() {
         console.log(error);
       }
     }
-  }
+  };
 
   useEffect(() => {
-  
     getDataInvoice();
-    
   }, []);
 
   const TABLE_HEAD = [
@@ -100,55 +99,79 @@ export default function Invoice() {
 
   const check = () => {
     console.log(invioceData);
-  }
+  };
 
-  const getSelectDataDormitory = (idDormitory:string) => {
-    const filteredData = invioceDefaultData.filter(data => data.idDormitory === idDormitory);
+  const getSelectDataDormitory = (idDormitory: string) => {
+    const filteredData = invioceDefaultData.filter(
+      (data) => data.idDormitory === idDormitory
+    );
     setInvioceData(filteredData);
-  }
+  };
 
-  const getSelectDataBuilding = (idBuilding:string) => {
-    const filteredData = invioceDefaultData.filter(data => data.idBuilding === idBuilding);
+  const getSelectDataBuilding = (idBuilding: string) => {
+    const filteredData = invioceDefaultData.filter(
+      (data) => data.idBuilding === idBuilding
+    );
     setInvioceData(filteredData);
-  }
+  };
 
   return (
     <div className="mx-5 md:mx-10 mt-5 mb-10 min-w-[500px]">
       {/* <button onClick={check}>CHECK</button> */}
       <div className="flex justify-between items-center">
         <Typography variant="h5">Invoice</Typography>
-        <div className="flex w-70 gap-2">
-          <Select 
-            onChange={(val) => {setSelectedDormitoryId(val); getSelectDataDormitory(val)}}
-            label="Select Dormitory">
-            {invioceDefaultData.reduce((uniqueDormitories, invoData) => {
-              if (!uniqueDormitories.includes(invoData.idDormitory)) {
-                uniqueDormitories.push(invoData.idDormitory);
-              }
-              return uniqueDormitories;
-            }, []).map((dormitoryId, index) => {
-              const invoData = invioceDefaultData.find(item => item.idDormitory === dormitoryId);
-              return <Option key={index} value={invoData?.idDormitory}>{invoData.dormitoryName}</Option>;
-            })}
+        <div className="flex gap-5 w-[30%] gap-2">
+          <Select
+            onChange={(val) => {
+              setSelectedDormitoryId(val);
+              getSelectDataDormitory(val);
+            }}
+            label="Select Dormitory"
+          >
+            {invioceDefaultData
+              .reduce((uniqueDormitories, invoData) => {
+                if (!uniqueDormitories.includes(invoData.idDormitory)) {
+                  uniqueDormitories.push(invoData.idDormitory);
+                }
+                return uniqueDormitories;
+              }, [])
+              .map((dormitoryId, index) => {
+                const invoData = invioceDefaultData.find(
+                  (item) => item.idDormitory === dormitoryId
+                );
+                return (
+                  <Option key={index} value={invoData?.idDormitory}>
+                    {invoData.dormitoryName}
+                  </Option>
+                );
+              })}
           </Select>
-          <Select 
-            onChange={(val) => {getSelectDataBuilding(val)}}
-            label="Select Building" disabled = {selectedDormitoryId === ''}>
-              {invioceDefaultData
-                .filter(meterData => meterData.idDormitory === selectedDormitoryId) // กรองข้อมูลเพื่อให้เหลือเฉพาะที่มี idDormitory เดียวกับที่เลือกไว้
-                .map((meterData, index) => (
-                  <Option key={index} value={meterData?.idBuilding} >{meterData.buildingName}</Option> // แสดงชื่อตึก
-                ))}
+          <Select
+            onChange={(val) => {
+              getSelectDataBuilding(val);
+            }}
+            label="Select Building"
+            disabled={selectedDormitoryId === ""}
+          >
+            {invioceDefaultData
+              .filter(
+                (meterData) => meterData.idDormitory === selectedDormitoryId
+              ) // กรองข้อมูลเพื่อให้เหลือเฉพาะที่มี idDormitory เดียวกับที่เลือกไว้
+              .map((meterData, index) => (
+                <Option key={index} value={meterData?.idBuilding}>
+                  {meterData.buildingName}
+                </Option> // แสดงชื่อตึก
+              ))}
           </Select>
         </div>
       </div>
       <div className="flex justify-between items-center mt-5">
-        <div className="w-80 border-l-[3px] px-5 py-2 border-black font-bold">
+        <div className="w-80 border-l-[3px] px-5 py-2 border-prim font-bold">
           All Building
         </div>
         <Popover placement="bottom-end">
           <PopoverHandler>
-            <Button className="flex gap-2 items-center">
+            <Button className="flex font-semibold bg-black/[.8] hover:bg-black text-white  shadow-2 hover:shadow-sm gap-2 items-center">
               <CalendarDaysIcon className="w-5 h-5" />
               Invoice Setting
             </Button>
@@ -214,109 +237,122 @@ export default function Invoice() {
           </PopoverContent>
         </Popover>
       </div>
-      {invioceData && invioceData.map((dormData) => (
-      <div className="px-5 mt-5 border rounded-lg overflow-auto">
-        <p className="font-bold my-5">{dormData.dormitoryName} | Building {dormData.buildingName} </p>
-        <table className="w-full min-w-max table-auto text-center mb-5 ">
-          <thead>
-            <tr>
-              {TABLE_HEAD.map((head) => (
-                <th key={head} className="border-b border-blue-gray-100 p-4">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal leading-none opacity-70"
-                  >
-                    {head}
-                  </Typography>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {dormData.invoiceAll.map((invoice) => (
-                <tr key={invoice.roomName} className="even:bg-blue-gray-50/50">
-                  <td className="p-4">
-                    <Typography
-                      variant="small"
-                      color="black"
-                      className="font-normal"
+      {invioceData &&
+        invioceData.map((dormData) => (
+          <div className="px-5 mt-5 border rounded-lg overflow-auto">
+            <p className="font-bold my-5">
+              {dormData.dormitoryName} | Building {dormData.buildingName}{" "}
+            </p>
+            <table className="w-full min-w-max table-auto text-center mb-5 ">
+              <thead>
+                <tr>
+                  {TABLE_HEAD.map((head) => (
+                    <th
+                      key={head}
+                      className="border-b border-blue-gray-100 p-4"
                     >
-                      {invoice.roomName}
-                    </Typography>
-                  </td>
-                  <td className="p-2">
-                    <Typography
-                      variant="small"
-                      color="black"
-                      className="font-normal"
-                    >
-                      {invoice.roomPrice}
-                    </Typography>
-                  </td>
-                  <td className="p-2">
-                    <Typography
-                      variant="small"
-                      color="black"
-                      className="font-normal"
-                    >
-                      {invoice.internetPrice}
-                    </Typography>
-                  </td>
-                  <td className="p-2">
-                    <Typography
-                      variant="small"
-                      color="black"
-                      className="font-normal"
-                    >
-                      {invoice.other}
-                    </Typography>
-                  </td>
-                  <td className="p-2">
-                    <Typography
-                      variant="small"
-                      color="black"
-                      className="font-normal"
-                    >
-                      {invoice.electricityPrice}
-                    </Typography>
-                  </td>
-                  <td className="p-2">
-                    <Typography
-                      variant="small"
-                      color="black"
-                      className="font-normal"
-                    >
-                      {invoice.waterPrice}
-                    </Typography>
-                  </td>
-                  <td className="p-2">
-                    <Typography
-                      variant="small"
-                      color="black"
-                      className="font-normal"
-                    >
-                      {invoice.total}
-                    </Typography>
-                  </td>
-                  <td className="p-2">
-                    <Typography
-                      variant="small"
-                      color="black"
-                      className="font-normal"
-                    >
-                      {invoice.status}
-                    </Typography>
-                  </td>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal leading-none opacity-70"
+                      >
+                        {head}
+                      </Typography>
+                    </th>
+                  ))}
                 </tr>
-              )
-            )}
-          </tbody>
-        </table>
-      </div>
-      ))}
+              </thead>
+              <tbody>
+                {dormData.invoiceAll.map((invoice) => (
+                  <tr
+                    key={invoice.roomName}
+                    className="even:bg-blue-gray-50/50"
+                  >
+                    <td className="p-4">
+                      <Typography
+                        variant="small"
+                        color="black"
+                        className="font-normal"
+                      >
+                        {invoice.roomName}
+                      </Typography>
+                    </td>
+                    <td className="p-2">
+                      <Typography
+                        variant="small"
+                        color="black"
+                        className="font-normal"
+                      >
+                        {invoice.roomPrice}
+                      </Typography>
+                    </td>
+                    <td className="p-2">
+                      <Typography
+                        variant="small"
+                        color="black"
+                        className="font-normal"
+                      >
+                        {invoice.internetPrice}
+                      </Typography>
+                    </td>
+                    <td className="p-2">
+                      <Typography
+                        variant="small"
+                        color="black"
+                        className="font-normal"
+                      >
+                        {invoice.other}
+                      </Typography>
+                    </td>
+                    <td className="p-2">
+                      <Typography
+                        variant="small"
+                        color="black"
+                        className="font-normal"
+                      >
+                        {invoice.electricityPrice}
+                      </Typography>
+                    </td>
+                    <td className="p-2">
+                      <Typography
+                        variant="small"
+                        color="black"
+                        className="font-normal"
+                      >
+                        {invoice.waterPrice}
+                      </Typography>
+                    </td>
+                    <td className="p-2">
+                      <Typography
+                        variant="small"
+                        color="black"
+                        className="font-normal"
+                      >
+                        {invoice.total}
+                      </Typography>
+                    </td>
+                    <td className="p-2">
+                      <Typography
+                        variant="small"
+                        color="black"
+                        className="font-normal"
+                      >
+                        {invoice.status}
+                      </Typography>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
       <div className="flex justify-end mt-5">
-        <Button onClick ={() => {alert("ส่งใบแจ้งหนี้สำเร็จ")}}className="flex items-center gap-2">
+        <Button
+          onClick={() => {
+            alert("ส่งใบแจ้งหนี้สำเร็จ");
+          }}
+          className="flex items-center justify-center gap-2 bg-prim hover:bg-prim2 text-a px-8 text-[14px]"
+        >
           <PaperAirplaneIcon className="h-5 w-5" />
           Send All
         </Button>
