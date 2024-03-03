@@ -215,7 +215,7 @@ const PiechartConfig = {
 
 export default function Dashboard() {
   return (
-    <div className="mx-5 md:mx-10 mt-5 mb-10 min-w-[500px]">
+    <div className="container mx-auto mt-5 mb-10 w-[60%]">
       <Typography variant="h5" className="mb-5">
         Dashboard
       </Typography>

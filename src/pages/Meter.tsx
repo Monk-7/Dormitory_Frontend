@@ -70,9 +70,11 @@ export default function Meter() {
   ];
 
   const [meterPrevData, setPrevMeterData] = useState<meterPrevInterface[]>([]);
-  const [meterPrevDefaultData, setPrevMeterDefaultData] = useState<meterPrevInterface[]>([]);
+  const [meterPrevDefaultData, setPrevMeterDefaultData] = useState<
+    meterPrevInterface[]
+  >([]);
   const [checkTabsData, setTabsData] = useState<string>("efee");
-  const [selectedDormitoryId, setSelectedDormitoryId] = useState<string>('');
+  const [selectedDormitoryId, setSelectedDormitoryId] = useState<string>("");
 
   const [inputValues, setInputValues] = useState<{
     [idMeterRoom: string]: { electricity: number; water: number };
@@ -117,82 +119,97 @@ export default function Meter() {
     console.log(updatedMeterData);
     try {
       const res = await apiClient(`${API}/Meter/UpdateMeter`, {
-        method: 'PUT',
+        method: "PUT",
         data: updatedMeterData,
       });
       console.log(res);
       window.location.reload();
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.log(error);
     }
   };
 
-  const getSelectDataDormitory = (idDormitory:string) => {
-    const filteredData = meterPrevDefaultData.filter(data => data.idDormitory === idDormitory);
+  const getSelectDataDormitory = (idDormitory: string) => {
+    const filteredData = meterPrevDefaultData.filter(
+      (data) => data.idDormitory === idDormitory
+    );
     setPrevMeterData(filteredData);
-  }
+  };
 
-  const getSelectDataBuilding = (idBuilding:string) => {
-    const filteredData = meterPrevDefaultData.filter(data => data.idBuilding === idBuilding);
+  const getSelectDataBuilding = (idBuilding: string) => {
+    const filteredData = meterPrevDefaultData.filter(
+      (data) => data.idBuilding === idBuilding
+    );
     setPrevMeterData(filteredData);
-  }
+  };
 
   useEffect(() => {
-    const getDataAllMeterPrev= async () => {
+    const getDataAllMeterPrev = async () => {
       const id = getUserId();
-      if(id !== '')
-      {
+      if (id !== "") {
         try {
-
           const res = await apiClient(`${API}/Meter/GetAndCreateMeter/${id}`, {
-            method: 'GET',
+            method: "GET",
           });
           setPrevMeterData(res.data);
           setPrevMeterDefaultData(res.data);
           console.log(res.data);
-
-        }
-        catch (error)
-        {
+        } catch (error) {
           console.log(error);
         }
       }
-    }
+    };
 
     getDataAllMeterPrev();
 
     //setPrevMeterData(jsonData);
   }, []);
 
-
-
   return (
     <div className="mx-5 md:mx-10 mt-5 mb-10 min-w-[500px]">
       <div className="flex justify-between items-center">
         <Typography variant="h5">Meter</Typography>
         <div className="flex w-70 gap-2">
-          <Select 
-           onChange={(val) => {setSelectedDormitoryId(val); getSelectDataDormitory(val)}}
-            label="Select Dormitory">
-            {meterPrevDefaultData.reduce((uniqueDormitories, meterData) => {
-              if (!uniqueDormitories.includes(meterData.idDormitory)) {
-                uniqueDormitories.push(meterData.idDormitory);
-              }
-              return uniqueDormitories;
-            }, []).map((dormitoryId, index) => {
-              const dormitoryData = meterPrevDefaultData.find(item => item.idDormitory === dormitoryId);
-              return <Option key={index} value={dormitoryData?.idDormitory}>{dormitoryData.dormitoryName}</Option>;
-            })}
-          </Select>
-          <Select 
-          onChange={(val) => {getSelectDataBuilding(val)}}
-          label="Select Building" disabled = {selectedDormitoryId === ''}>
+          <Select
+            onChange={(val) => {
+              setSelectedDormitoryId(val);
+              getSelectDataDormitory(val);
+            }}
+            label="Select Dormitory"
+          >
             {meterPrevDefaultData
-              .filter(meterData => meterData.idDormitory === selectedDormitoryId) // กรองข้อมูลเพื่อให้เหลือเฉพาะที่มี idDormitory เดียวกับที่เลือกไว้
+              .reduce((uniqueDormitories, meterData) => {
+                if (!uniqueDormitories.includes(meterData.idDormitory)) {
+                  uniqueDormitories.push(meterData.idDormitory);
+                }
+                return uniqueDormitories;
+              }, [])
+              .map((dormitoryId, index) => {
+                const dormitoryData = meterPrevDefaultData.find(
+                  (item) => item.idDormitory === dormitoryId
+                );
+                return (
+                  <Option key={index} value={dormitoryData?.idDormitory}>
+                    {dormitoryData.dormitoryName}
+                  </Option>
+                );
+              })}
+          </Select>
+          <Select
+            onChange={(val) => {
+              getSelectDataBuilding(val);
+            }}
+            label="Select Building"
+            disabled={selectedDormitoryId === ""}
+          >
+            {meterPrevDefaultData
+              .filter(
+                (meterData) => meterData.idDormitory === selectedDormitoryId
+              ) // กรองข้อมูลเพื่อให้เหลือเฉพาะที่มี idDormitory เดียวกับที่เลือกไว้
               .map((meterData, index) => (
-                <Option key={index} value={meterData?.idBuilding} >{meterData.buildingName}</Option> // แสดงชื่อตึก
+                <Option key={index} value={meterData?.idBuilding}>
+                  {meterData.buildingName}
+                </Option> // แสดงชื่อตึก
               ))}
           </Select>
         </div>
@@ -216,9 +233,7 @@ export default function Meter() {
             </TabsHeader>
           </Tabs>
         </div>
-        <Button
-          className="flex items-center rounded-md font-semibold text-sm bg-[#FFBF73] hover:bg-[#F18C48] text-b flex items-center gap-2"
-        >
+        <Button className="flex items-center rounded-md font-semibold text-sm bg-[#FFBF73] hover:bg-[#F18C48] text-b flex items-center gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -241,7 +256,7 @@ export default function Meter() {
         meterPrevData.map((label, key) => (
           <div className="px-5 mt-5 border rounded-lg overflow-auto">
             <p className="font-bold my-5">
-              {label.dormitoryName} | Building {label.buildingName} 
+              {label.dormitoryName} | Building {label.buildingName}
             </p>
             <table className="w-full min-w-max table-auto text-center mb-5 ">
               <thead>
@@ -340,7 +355,12 @@ export default function Meter() {
           </div>
         ))}
       <div className="flex justify-end mt-5">
-        <Button onClick={handleSaveMeterData} className="bg-prim hover:bg-prim2 text-a">Saved successfully</Button>
+        <Button
+          onClick={handleSaveMeterData}
+          className="bg-prim hover:bg-prim2 text-a"
+        >
+          Saved successfully
+        </Button>
       </div>
     </div>
   );

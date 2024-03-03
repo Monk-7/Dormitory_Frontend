@@ -38,34 +38,27 @@ const data = [
   },
 ];
 
-
 interface communityIdInterface {
   idCommunity: string;
   idUser: string;
 }
 
-
 export default function Community() {
   const [selected, setselected] = useState(1);
-  const [categoryPost, setCategoryPost] = useState('public');
+  const [categoryPost, setCategoryPost] = useState("public");
   const [postData, setPostData] = useState<string[]>([]);
 
   const getDataPostPublic = async () => {
     try {
-      const res = await apiClient(
-        `${API}/Community/GetPostPublic`,
-        {
-          method: "GET",
-        }
-      );
-      setPostData(res.data)
-      setCategoryPost('public');
+      const res = await apiClient(`${API}/Community/GetPostPublic`, {
+        method: "GET",
+      });
+      setPostData(res.data);
+      setCategoryPost("public");
       console.log(res.data);
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
     }
-    
   };
 
   const getDataPostApartment = async () => {
@@ -79,7 +72,7 @@ export default function Community() {
           }
         );
         setPostData(res.data);
-        setCategoryPost('apartment');
+        setCategoryPost("apartment");
         //console.log(res.data);
       } catch (error) {
         console.log(error);
@@ -112,33 +105,41 @@ export default function Community() {
   }, []);
   return (
     <div className="mx-5 mt-5 mb-10 min-w-[500px]">
-
       <Typography variant="h5">Community</Typography>
       <div className="flex md:justify-between justify-center mt-5">
         <Card className="h-fit min-w-[250px] w-[30%] lg:w-[20%] hidden md:block">
           <List className="text-sm">
             <ListItem
               selected={selected === 1}
-              onClick={() => {setselected(1); getDataPostPublic();}}
+              onClick={() => {
+                setselected(1);
+                getDataPostPublic();
+              }}
             >
               Public
             </ListItem>
             <ListItem
               selected={selected === 2}
-              onClick={() =>{setselected(2); getDataPostApartment();}}
+              onClick={() => {
+                setselected(2);
+                getDataPostApartment();
+              }}
             >
               My Apartment
             </ListItem>
             <ListItem
               selected={selected === 3}
-              onClick={() => {setselected(3); getDataPostAnnouncement();}}
+              onClick={() => {
+                setselected(3);
+                getDataPostAnnouncement();
+              }}
             >
               Announcement
             </ListItem>
           </List>
         </Card>
 
-        <div className="flex flex-col  min-w-[350px] lg:min-w-[450px] md:w-[80%] lg:w-[50%]">
+        <div className="flex flex-col  min-w-[350px] lg:min-w-[450px] md:w-[80%] lg:w-[40%]">
           <Card className="flex flex-row p-4 mx-2 mb-2 gap-2 lg:hidden">
             <img
               className="h-10 w-10 rounded-full object-cover object-center"
@@ -151,10 +152,10 @@ export default function Community() {
           </Card>
 
           {postData.map((val, key) => (
-            <PostCommunity data = {val}/>
+            <PostCommunity data={val} />
           ))}
         </div>
-        <AddPostCommunity data = {categoryPost}/>
+        <AddPostCommunity data={categoryPost} />
       </div>
     </div>
   );

@@ -1,5 +1,12 @@
 import { MapPinIcon, PhotoIcon } from "@heroicons/react/24/solid";
-import { Button, Card, Carousel, IconButton, Textarea, Typography } from "@material-tailwind/react";
+import {
+  Button,
+  Card,
+  Carousel,
+  IconButton,
+  Textarea,
+  Typography,
+} from "@material-tailwind/react";
 import apiClient from "../services/apiClient";
 import { useEffect, useState } from "react";
 import { API } from "../services/configAPI";
@@ -16,8 +23,7 @@ interface userInterface {
   lastname: string;
   role: string;
 }
-export default function AddPostCommunity({data}:{data:string}) {
-
+export default function AddPostCommunity({ data }: { data: string }) {
   const [imageFormFiles, setImageFormFiles] = useState([]);
   const [imageUrl, setImageUrl] = useState([]);
   const [proFileUrl, setProFileUrl] = useState<string>();
@@ -29,25 +35,24 @@ export default function AddPostCommunity({data}:{data:string}) {
   });
 
   const handleFileChange = (event) => {
-    
     const files = event.target.files;
     const imageFilesArray = [];
     const imageFilesUrl = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      if (!file.type.startsWith('image/')){
+      if (!file.type.startsWith("image/")) {
         alert("Png or Jpg File Only");
         imageFilesArray.length = 0;
         break;
-      } 
+      }
       const url = URL.createObjectURL(file);
       imageFilesUrl.push(url);
       imageFilesArray.push(file);
     }
     setImageUrl(imageFilesUrl);
-    setImageFormFiles(imageFilesArray)
-  } 
+    setImageFormFiles(imageFilesArray);
+  };
 
   const changeCommunityPostHandler = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -61,13 +66,10 @@ export default function AddPostCommunity({data}:{data:string}) {
     if (isFormFilled && token !== "") {
       console.log(form);
       try {
-        const res = await apiClient(
-          `${API}/Community/CreatePost`,
-          {
-            method: "POST",
-            data: form,
-          }
-        );
+        const res = await apiClient(`${API}/Community/CreatePost`, {
+          method: "POST",
+          data: form,
+        });
         const formData = new FormData();
         imageFormFiles.forEach((file) => {
           formData.append(`files`, file);
@@ -95,17 +97,17 @@ export default function AddPostCommunity({data}:{data:string}) {
   };
 
   useEffect(() => {
-    const url = localStorage.getItem('ProFileURL') || '';
+    const url = localStorage.getItem("ProFileURL") || "";
     setProFileUrl(url);
     const user = getCurrentUser();
     setUserData(user);
 
-    setForm(prevForm => ({ ...prevForm, category : data}));
-    setForm(prevForm => ({ ...prevForm, idUser : user.userID}));
-  },[data])
+    setForm((prevForm) => ({ ...prevForm, category: data }));
+    setForm((prevForm) => ({ ...prevForm, idUser: user.userID }));
+  }, [data]);
 
   return (
-    <Card className="p-5 h-fit min-w-[300px] w-[30%] hidden lg:block">
+    <Card className="p-5 h-fit min-w-[300px] max-w-[400px] w-[30%] hidden lg:block">
       <div className="flex items-center">
         <img
           className="h-10 w-10 rounded-full object-cover object-center"
@@ -113,7 +115,9 @@ export default function AddPostCommunity({data}:{data:string}) {
           alt="nature image"
         />
         <div className="ml-5">
-          <Typography variant="h6">{userData?.firstname + " " + userData?.lastname}</Typography>
+          <Typography variant="h6">
+            {userData?.firstname + " " + userData?.lastname}
+          </Typography>
         </div>
       </div>
       <div>
@@ -124,30 +128,30 @@ export default function AddPostCommunity({data}:{data:string}) {
           placeholder="Your Post"
           rows={8}
         />
-        
-        {imageUrl && imageUrl.map((img,index) => (
-          <div key={index} className="">
-            <img
-              className="w-full object-cover object-center"
-              src={img}
-              alt="gallery-photo"
-            />
-          </div>
-        )) }
+
+        {imageUrl &&
+          imageUrl.map((img, index) => (
+            <div key={index} className="">
+              <img
+                className="w-full object-cover object-center"
+                src={img}
+                alt="gallery-photo"
+              />
+            </div>
+          ))}
         <div className="flex w-full justify-between py-1.5">
           <div className="flex items-center gap-2">
             <IconButton variant="text" color="blue-gray">
-            <input
-              type="file"
-              className="sr-only"
-              id="inputImg"
-              multiple
-              onChange={handleFileChange} // ใส่โค้ดการจัดการเมื่อมีการเลือกไฟล์ที่เปลี่ยนแปลงที่นี่
-            />
-            <label htmlFor="inputImg">
-              <PhotoIcon  className="w-8 h-8" />
-            </label>
-              
+              <input
+                type="file"
+                className="sr-only"
+                id="inputImg"
+                multiple
+                onChange={handleFileChange} // ใส่โค้ดการจัดการเมื่อมีการเลือกไฟล์ที่เปลี่ยนแปลงที่นี่
+              />
+              <label htmlFor="inputImg">
+                <PhotoIcon className="w-8 h-8" />
+              </label>
             </IconButton>
             <IconButton variant="text" color="blue-gray">
               <MapPinIcon className="w-8 h-8" />

@@ -11,8 +11,7 @@ import { useToggle } from "../../hooks/useToggle";
 import React, { useState, useEffect } from "react";
 
 import apiClient from "../../services/apiClient";
-import {API} from "../../services/configAPI";
-
+import { API } from "../../services/configAPI";
 
 interface roomInterface {
   idBuilding: string;
@@ -38,13 +37,10 @@ export default function AddRoom({ data }: { data: string }) {
     if (isFormFilled) {
       console.log(form);
       try {
-        const res = await apiClient(
-          `${API}/Room/CreateOneRoom`,
-          {
-            method: "POST",
-            data: form,
-          }
-        );
+        const res = await apiClient(`${API}/Room/CreateOneRoom`, {
+          method: "POST",
+          data: form,
+        });
         console.log(res);
         window.location.reload();
       } catch (error) {
@@ -56,7 +52,7 @@ export default function AddRoom({ data }: { data: string }) {
   };
 
   useEffect(() => {
-    setForm(prevForm => ({ ...prevForm, idBuilding : data}));
+    setForm((prevForm) => ({ ...prevForm, idBuilding: data }));
   }, []);
 
   return (
@@ -66,7 +62,12 @@ export default function AddRoom({ data }: { data: string }) {
         onClick={setIsOpen}
         className="cursor-pointer"
       />
-      <Dialog size="sm" open={isOpen} handler={setIsOpen} className="p-4 ">
+      <Dialog
+        size="xs"
+        className="p-4 md:!min-w-[500px]"
+        open={isOpen}
+        handler={setIsOpen}
+      >
         <DialogHeader className="p-2">Create new room</DialogHeader>
         <DialogBody className="p-2">
           <p>You need to enter the detail for create your room.</p>

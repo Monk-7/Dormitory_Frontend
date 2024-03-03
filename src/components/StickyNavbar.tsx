@@ -16,14 +16,12 @@ import {
 import {
   UserCircleIcon,
   ChevronDownIcon,
-  Cog6ToothIcon,
-  InboxArrowDownIcon,
-  LifebuoyIcon,
   PowerIcon,
   BellIcon,
+  BuildingOffice2Icon,
 } from "@heroicons/react/24/outline";
 
-import { BuildingOffice2Icon } from "@heroicons/react/24/solid";
+import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import { checkLogin, login, registerFunc } from "../services/authService";
 import apiClient from "../services/apiClient";
 import { getCurrentUser, getUserId } from "../services/userService";
@@ -33,20 +31,8 @@ import Notify from "./Detail/Notify";
 
 const profileMenuItems = [
   {
-    label: "My Profile",
-    icon: UserCircleIcon,
-  },
-  {
     label: "Edit Profile",
-    icon: Cog6ToothIcon,
-  },
-  {
-    label: "Inbox",
-    icon: InboxArrowDownIcon,
-  },
-  {
-    label: "Help",
-    icon: LifebuoyIcon,
+    icon: UserCircleIcon,
   },
   {
     label: "Sign Out",
@@ -85,38 +71,42 @@ export function StickyNavbar() {
     }
   };
 
-  const getImgProFile = async (idUser : string) =>
-  {
-    try{
+  const getImgProFile = async (idUser: string) => {
+    try {
       const res = await apiClient(`${API}/User/getProFile/${idUser}`, {
-        responseType: 'blob',
-        method: 'GET'
+        responseType: "blob",
+        method: "GET",
       });
-      
+
       const blob = new Blob([res.data]);
       const url = URL.createObjectURL(blob);
       setProFileUrl(url);
-      localStorage.setItem('ProFileURL',url);
-    }
-    catch(error)
-    {
+      localStorage.setItem("ProFileURL", url);
+    } catch (error) {
       console.log(error);
-      setProFileUrl("https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80");
-      localStorage.setItem('ProFileURL', "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80");
+      setProFileUrl(
+        "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
+      );
+      localStorage.setItem(
+        "ProFileURL",
+        "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
+      );
     }
-  }
-  
+  };
+
   useEffect(() => {
     checkAuth();
   }, []);
 
   function ProfileMenu() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
     const menuAction = (
       event: React.MouseEvent<HTMLInputElement, MouseEvent>
     ) => {
       setIsMenuOpen(false);
+      if (event.currentTarget.name === "Edit Profile") {
+        window.location.href = "/edit-profile";
+      }
       if (event.currentTarget.name === "Sign Out") {
         localStorage.setItem("token", "");
         window.location.reload();
@@ -137,12 +127,12 @@ export function StickyNavbar() {
               className="border border-gray-900 p-0.5"
               src={proFileUrl}
             />
-            <span className="normal-case mx-2 text-sm hidden md:block">
+            <span className="normal-case mx-2 text-sm hidden xl:block">
               {userData?.firstname} {userData?.lastname}
             </span>
             <ChevronDownIcon
               strokeWidth={2.5}
-              className={`h-3 w-3 transition-transform hidden md:block mr-2 ${
+              className={`h-3 w-3 transition-transform hidden xl:block mr-2 ${
                 isMenuOpen ? "rotate-180" : ""
               }`}
             />
@@ -186,7 +176,10 @@ export function StickyNavbar() {
     <ul className="my-4 flex flex-col gap-5 lg:my-0 lg:flex-row lg:items-center">
       {isAuth ? (
         Links.map((li) => (
-          <Typography as="li"  className="px-0 lg:px-5 font-bold text-d hover:text-prim">
+          <Typography
+            as="li"
+            className="px-0 lg:px-5 font-bold text-d hover:text-prim"
+          >
             <a href={li.path} className="flex items-center">
               {li.name}
             </a>
@@ -219,10 +212,19 @@ export function StickyNavbar() {
         <div className="flex items-center">
           {isAuth ? (
             <div className="flex gap-5 items-center">
+              <button className="flex relative items-center">
+                <BuildingOffice2Icon width={24} />
+                <PlusCircleIcon
+                  width={20}
+                  className="absolute right-[-5px] top-[-7px] text-white"
+                />
+              </button>
               <AddDorm />
-              <button><BellIcon width={24} /></button>
-                {/* <Notify/> */} 
-          
+              <button>
+                <BellIcon width={24} />
+              </button>
+              {/* <Notify /> */}
+
               <ProfileMenu />
             </div>
           ) : (

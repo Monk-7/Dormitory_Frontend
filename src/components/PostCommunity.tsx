@@ -1,10 +1,25 @@
-import { Button, Card, IconButton, Input, Menu, MenuHandler, MenuItem, MenuList, Option, Select, Typography } from "@material-tailwind/react";
+import {
+  Button,
+  Card,
+  IconButton,
+  Input,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
+  Option,
+  Select,
+  Typography,
+} from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 
 import configAPI, { API } from "../services/configAPI";
 import apiClient from "../services/apiClient";
 
-import { EllipsisHorizontalIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import {
+  EllipsisHorizontalIcon,
+  PaperAirplaneIcon,
+} from "@heroicons/react/24/solid";
 import JSZip from "jszip";
 import Comment from "./Comment";
 import { getUserId } from "../services/userService";
@@ -17,7 +32,7 @@ const img = [
 ];
 
 interface getPostInterface {
-  idCommunity:string;
+  idCommunity: string;
   idUser: string;
   fullName: string;
   category: string;
@@ -25,7 +40,7 @@ interface getPostInterface {
   timesTamp: string;
 }
 interface postInterface {
-  idCommunity:string;
+  idCommunity: string;
   idUser: string;
   fullName: string;
   category: string;
@@ -34,9 +49,8 @@ interface postInterface {
 }
 
 interface getCommentInterface {
-
-  idComment:string;
-  idCommunity:string;
+  idComment: string;
+  idCommunity: string;
   idUser: string;
   fullName: string;
   category: string;
@@ -44,8 +58,7 @@ interface getCommentInterface {
   timesTamp: string;
 }
 
-export default function PostCommunity({data}:{data:string}) {
-
+export default function PostCommunity({ data }: { data: string }) {
   const [visibleImages, setVisibleImages] = useState(img);
   const [images, setImages] = useState(img);
   const imagesPerPost = 2;
@@ -59,7 +72,6 @@ export default function PostCommunity({data}:{data:string}) {
   const [commentData, setCommentData] = useState<getCommentInterface[]>([]);
   const [formComment, setFormComment] = useState<string>();
 
-
   const showMoreImages = () => {
     const remainingImages = images.slice(
       visibleImages.length,
@@ -71,16 +83,16 @@ export default function PostCommunity({data}:{data:string}) {
   const setDate = (_data: getPostInterface) => {
     const newData: postInterface = {
       ..._data,
-      timesTamp: new Date(_data.timesTamp) // แปลง timesTamp เป็น Date
+      timesTamp: new Date(_data.timesTamp), // แปลง timesTamp เป็น Date
     };
-  
+
     return newData;
-  }
+  };
 
   const formatTimeAgo = (postTimestamp: Date): string => {
     const currentTimestamp = new Date();
     const timeDiff = currentTimestamp.getTime() - postTimestamp.getTime();
-  
+
     // คำนวณเวลาในหน่วยต่าง ๆ
     const minutes = Math.floor(timeDiff / (1000 * 60));
     const hours = Math.floor(timeDiff / (1000 * 60 * 60));
@@ -88,7 +100,7 @@ export default function PostCommunity({data}:{data:string}) {
     const weeks = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 7));
     const months = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 30.4375)); // ประมาณหนึ่งเดือนมีประมาณ 30.4375 วัน
     const years = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 365.25)); // ประมาณหนึ่งปีมีประมาณ 365.25 วัน
-  
+
     // สร้างข้อความเพื่อแสดงผล
     if (years > 0) {
       return `${years} years ago`;
@@ -103,8 +115,8 @@ export default function PostCommunity({data}:{data:string}) {
     } else {
       return `${minutes} minutes ago`;
     }
-  }
-  
+  };
+
   const handleZipFile = async (file) => {
     const reader = new FileReader();
     reader.onload = async () => {
@@ -112,92 +124,78 @@ export default function PostCommunity({data}:{data:string}) {
       const zip = new JSZip();
       const zipFile = await zip.loadAsync(buffer);
       const imageUrls = [];
-      
+
       // เปลี่ยน forEach เป็น for-of เพื่อให้สามารถใช้ await ได้ในการทำงานกับ zipEntry
       for (const [relativePath, zipEntry] of Object.entries(zipFile.files)) {
         //console.log('File:', relativePath);
-        const imageData = await zipEntry.async('arraybuffer');
+        const imageData = await zipEntry.async("arraybuffer");
         const blob = new Blob([imageData]);
         const imageUrl = URL.createObjectURL(blob);
         imageUrls.push(imageUrl);
       }
-      
+
       setImageUrl(imageUrls);
     };
-  
+
     reader.readAsArrayBuffer(file);
   };
 
   const getImgPost = async () => {
     try {
-      const res = await apiClient(
-        `${API}/Community/images/${data}`,
-        {
-          responseType: 'blob',
-          method: "GET",
-        }
-      );
+      const res = await apiClient(`${API}/Community/images/${data}`, {
+        responseType: "blob",
+        method: "GET",
+      });
       await handleZipFile(res.data);
       //console.log(res.data);
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
     }
-
   };
 
-  const getImgProFile = async (idUser : string) =>
-  {
-    try{
+  const getImgProFile = async (idUser: string) => {
+    try {
       const res = await apiClient(`${API}/User/getProFile/${idUser}`, {
-        responseType: 'blob',
-        method: 'GET'
+        responseType: "blob",
+        method: "GET",
       });
-      
+
       const blob = new Blob([res.data]);
       const url = URL.createObjectURL(blob);
       setProFileUrlPost(url);
-    }
-    catch(error)
-    {
+    } catch (error) {
       console.log(error);
-      setProFileUrlPost("https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80");
+      setProFileUrlPost(
+        "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
+      );
     }
-  }
+  };
 
   const getPost = async () => {
     try {
-      const res = await apiClient(
-        `${API}/Community/GetPost/${data}`,
-        {
-          method: "GET",
-        }
-      );
+      const res = await apiClient(`${API}/Community/GetPost/${data}`, {
+        method: "GET",
+      });
       const postWithDateConverted = setDate(res.data);
       setPostData(postWithDateConverted);
       setTimePost(formatTimeAgo(postWithDateConverted.timesTamp));
       await getImgPost();
       await getImgProFile(res.data.idUser);
       //console.log(res.data);
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
     }
   };
 
   const getComment = async () => {
     try {
-      const res = await apiClient(
-        `${API}/Comment/GetAllComment/${data}`,
-        {
-          method: "GET",
-        }
-      );
-      setCommentData(res.data)
-      setFormComment('');
+      const res = await apiClient(`${API}/Comment/GetAllComment/${data}`, {
+        method: "GET",
+      });
+      setCommentData(res.data);
+      setFormComment("");
       //console.log(res.data);
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
     }
   };
@@ -206,34 +204,29 @@ export default function PostCommunity({data}:{data:string}) {
     try {
       const idUser = getUserId();
       const form = {
-        idCommunity : data,
-        idUser : idUser,
-        details : formComment
-      }
-      const res = await apiClient(
-        `${API}/Comment/CreateComment`,
-        {
-          method: "POST",
-          data:form
-        }
-      );
+        idCommunity: data,
+        idUser: idUser,
+        details: formComment,
+      };
+      const res = await apiClient(`${API}/Comment/CreateComment`, {
+        method: "POST",
+        data: form,
+      });
       getComment();
       console.log(res);
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     getPost();
     getComment();
-    const url = localStorage.getItem('ProFileURL') || '';
+    const url = localStorage.getItem("ProFileURL") || "";
     setProFileUrl(url);
+  }, [data]);
 
-  },[data])
-
-  return(
+  return (
     <Card className="p-5 mx-2 mb-5">
       <div className="flex justify-between">
         <div className="flex items-center">
@@ -279,9 +272,7 @@ export default function PostCommunity({data}:{data:string}) {
         <Typography variant="small">comments</Typography>
       </div>
       <div className="border" />
-      {commentData && commentData.map((comment) => (
-        <Comment data = {comment}/>
-      ))}
+      {commentData && commentData.map((comment) => <Comment data={comment} />)}
 
       <div className="flex items-center mt-5">
         <img
@@ -291,7 +282,9 @@ export default function PostCommunity({data}:{data:string}) {
         />
         <div className="flex ml-5 mr-2 w-full">
           <Input
-            onChange={(event)=> {setFormComment(event.currentTarget.value)}}
+            onChange={(event) => {
+              setFormComment(event.currentTarget.value);
+            }}
             value={formComment}
             type="text"
             placeholder="Comment..."
