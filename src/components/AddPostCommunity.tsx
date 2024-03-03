@@ -141,7 +141,7 @@ export default function AddPostCommunity({ data }: { data: string }) {
           ))}
         <div className="flex w-full justify-between py-1.5">
           <div className="flex items-center gap-2">
-            <IconButton variant="text" color="blue-gray">
+            <IconButton variant="text" className="hover:bg-tao text-e-300">
               <input
                 type="file"
                 className="sr-only"
@@ -153,7 +153,7 @@ export default function AddPostCommunity({ data }: { data: string }) {
                 <PhotoIcon className="w-8 h-8" />
               </label>
             </IconButton>
-            <IconButton variant="text" color="blue-gray">
+            <IconButton variant="text" className="hover:bg-tao text-e-300">
               <MapPinIcon className="w-8 h-8" />
             </IconButton>
           </div>
@@ -161,7 +161,7 @@ export default function AddPostCommunity({ data }: { data: string }) {
             <Button
               onClick={sendDataCommunityPost}
               size="md"
-              className="rounded-md"
+              className="rounded-md bg-prim hover:bg-prim2 text-a"
             >
               Post
             </Button>

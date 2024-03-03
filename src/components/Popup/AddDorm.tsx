@@ -139,7 +139,7 @@ export default function AddDorm(props: any) {
       <DialogFooter className="p-2">
         <Button
           variant="filled"
-          className="bg-black"
+          className="text-a bg-prim hover:bg-prim2"
           onClick={sendDataAddDormitory}
         >
           <span>Continue</span>

@@ -169,7 +169,7 @@ export default function Meter() {
     <div className="mx-5 md:mx-10 mt-5 mb-10 min-w-[500px]">
       <div className="flex justify-between items-center">
         <Typography variant="h5">Meter</Typography>
-        <div className="flex w-70 gap-2">
+        <div className="flex gap-5 w-[30%] gap-2">
           <Select
             onChange={(val) => {
               setSelectedDormitoryId(val);
@@ -217,7 +217,7 @@ export default function Meter() {
       <div className="flex items-center justify-between mt-5 ">
         <div className="w-80  rounded-md">
           <Tabs value="efee">
-            <TabsHeader className="bg-prim  ">
+            <TabsHeader className="bg-prim/[80%]  ">
               {tabsData.map(({ label, value }) => (
                 <Tab
                   onClick={() => {
@@ -225,7 +225,7 @@ export default function Meter() {
                   }}
                   key={value}
                   value={value}
-                  className="font-semibold text-base text-e"
+                  className="font-bold text-e text-[15px] py-2"
                 >
                   {label}
                 </Tab>
@@ -233,7 +233,7 @@ export default function Meter() {
             </TabsHeader>
           </Tabs>
         </div>
-        <Button className="flex items-center rounded-md font-semibold text-sm bg-[#FFBF73] hover:bg-[#F18C48] text-b flex items-center gap-2">
+        <Button className="flex items-center rounded-md font-semibold bg-black/[.8] hover:bg-black text-white  shadow-2 hover:shadow-sm gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -357,9 +357,20 @@ export default function Meter() {
       <div className="flex justify-end mt-5">
         <Button
           onClick={handleSaveMeterData}
-          className="bg-prim hover:bg-prim2 text-a"
+          className="flex items-center justify-center gap-2 bg-prim hover:bg-prim2 text-a px-8 text-[14px]"
         >
-          Saved successfully
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="22"
+            viewBox="0 0 32 32"
+          >
+            <path
+              fill="black"
+              d="m27.71 9.29l-5-5A1 1 0 0 0 22 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V10a1 1 0 0 0-.29-.71M12 6h8v4h-8Zm8 20h-8v-8h8Zm2 0v-8a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8H6V6h4v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6.41l4 4V26Z"
+            />
+          </svg>
+          Save changes
         </Button>
       </div>
     </div>

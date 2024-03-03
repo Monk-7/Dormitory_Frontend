@@ -294,7 +294,10 @@ export default function PostCommunity({ data }: { data: string }) {
             }}
           />
         </div>
-        <IconButton onClick={postComment} className="min-w-[40px] h-10">
+        <IconButton
+          onClick={postComment}
+          className="min-w-[40px] h-10 bg-prim hover:bg-prim2"
+        >
           <PaperAirplaneIcon className="w-5 h-5" />
         </IconButton>
       </div>

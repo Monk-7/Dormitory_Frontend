@@ -265,7 +265,7 @@ export default function TenantDetail({ data }: { data: string }) {
               handleOpenGenCode();
               getCodeRoom(roomData?.idRoom);
             }}
-            className="bg-[#FEF167] hover:bg-[#fcec3f] text-b shadow-2 hover:shadow-sm"
+            className="bg-black/[.8] hover:bg-black text-white shadow-2 hover:shadow-sm"
           >
             Gen code
           </Button>
@@ -285,7 +285,7 @@ export default function TenantDetail({ data }: { data: string }) {
           </Dialog>
           <Button
             onClick={handleUpdateData}
-            className="bg-prim hover:bg-prim2 text-a"
+            className="bg-prim hover:bg-prim2 text-black font-bold bold bold-xl"
           >
             Save
           </Button>

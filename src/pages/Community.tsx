@@ -107,9 +107,10 @@ export default function Community() {
     <div className="mx-5 mt-5 mb-10 min-w-[500px]">
       <Typography variant="h5">Community</Typography>
       <div className="flex md:justify-between justify-center mt-5">
-        <Card className="h-fit min-w-[250px] w-[30%] lg:w-[20%] hidden md:block">
-          <List className="text-sm">
+        <Card className="h-fit min-w-[250px] w-[40%] lg:w-[20%] hidden md:block  ">
+          <List className="text-md text-e ">
             <ListItem
+              className="hover:bg-prim2/[.5] !hover-bg-red-500 focus:font-bold focus:bg-prim focus:text-a"
               selected={selected === 1}
               onClick={() => {
                 setselected(1);
@@ -119,6 +120,7 @@ export default function Community() {
               Public
             </ListItem>
             <ListItem
+              className="hover:bg-prim2/[.5]  focus:font-bold focus:bg-prim focus:text-a"
               selected={selected === 2}
               onClick={() => {
                 setselected(2);
@@ -128,6 +130,7 @@ export default function Community() {
               My Apartment
             </ListItem>
             <ListItem
+              className="hover:bg-prim2/[.5]  focus:font-bold focus:bg-prim focus:text-a"
               selected={selected === 3}
               onClick={() => {
                 setselected(3);
