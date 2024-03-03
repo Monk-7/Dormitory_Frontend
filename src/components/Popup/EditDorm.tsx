@@ -10,6 +10,7 @@ import {
 import apiClient from "../../services/apiClient";
 import { API } from "../../services/configAPI";
 import { getUserId } from "../../services/userService";
+import DeletePopup from "./DeletePopup";
 
 interface dormitoryInterface {
   idUser: string;
@@ -21,7 +22,9 @@ interface dormitoryInterface {
   email: string;
 }
 
-export default function AddDorm(props: any) {
+export default function EditDorm(props: any) {
+  const [openDelDialog, setOpenDelDialog] = useState(false);
+  const handleOpenDelDialog = () => setOpenDelDialog(!openDelDialog);
   const [form, setForm] = useState<dormitoryInterface>({
     idUser: "",
     address: "",
@@ -71,9 +74,9 @@ export default function AddDorm(props: any) {
       open={props.open}
       handler={props.handler}
     >
-      <DialogHeader className="p-2">Create new Dormitory</DialogHeader>
+      <DialogHeader className="p-2">Edit dormitory</DialogHeader>
       <DialogBody className="p-2">
-        <p>You need to enter the detail for create your dormitory.</p>
+        <p>You can edit your dormitory information.</p>
         <div className="my-5 flex items-center gap-5">
           <p className="w-[150px] text-black text-right">Dormitory name</p>
           <Input
@@ -85,6 +88,7 @@ export default function AddDorm(props: any) {
         <div className="my-5 flex items-center gap-5">
           <p className="w-[150px] text-black text-right">Address</p>
           <Input
+            disabled
             onChange={changeDormitoryHandler}
             name="address"
             label="Address"
@@ -93,6 +97,7 @@ export default function AddDorm(props: any) {
         <div className="my-5 flex items-center gap-5">
           <p className="w-[150px] text-black text-right">District</p>
           <Input
+            disabled
             onChange={changeDormitoryHandler}
             name="district"
             label="District"
@@ -101,6 +106,7 @@ export default function AddDorm(props: any) {
         <div className="my-5 flex items-center gap-5">
           <p className="w-[150px] text-black text-right">Province</p>
           <Input
+            disabled
             onChange={changeDormitoryHandler}
             name="province"
             label="Province"
@@ -109,6 +115,7 @@ export default function AddDorm(props: any) {
         <div className="my-5 flex items-center gap-5">
           <p className="w-[150px] text-black text-right">Postal Code</p>
           <Input
+            disabled
             onChange={changeDormitoryHandler}
             name="postalCode"
             label="Postal Code"
@@ -136,13 +143,22 @@ export default function AddDorm(props: any) {
           />
         </div>
       </DialogBody>
-      <DialogFooter className="p-2">
+      <DialogFooter className="gap-2 p-2">
+        <Button
+          variant="outlined"
+          color="red"
+          className="focus:shadow-none"
+          onClick={handleOpenDelDialog}
+        >
+          Delete Dorm
+        </Button>
+        <DeletePopup open={openDelDialog} handleDialog={handleOpenDelDialog} />
         <Button
           variant="filled"
           className="bg-black"
           onClick={sendDataAddDormitory}
         >
-          <span>Continue</span>
+          <span>save</span>
         </Button>
       </DialogFooter>
     </Dialog>
