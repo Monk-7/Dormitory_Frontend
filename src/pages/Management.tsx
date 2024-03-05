@@ -167,6 +167,7 @@ export default function Management() {
 
   const [roomName, setRoomName] = useState<string>("NO DATA");
   const [idRoom, setIdRoom] = useState<string>("");
+  const [isRerender, setIsRerender] = useState(false);
 
   const getDataDorm = async () => {
     const id = getUserId();
@@ -272,9 +273,11 @@ export default function Management() {
       const buildData: buildingInterface[] = await getBuildData(dormitoryAPI);
       const roomData = await getRoomStatusData(buildData);
       mergeData(dormitoryAPI, roomData);
+      setIsRerender(false);
+      console.log("kuyjaw");
     };
     getData();
-  }, [dormitoryAPI]);
+  }, [dormitoryAPI, isRerender]);
 
   const [text, setText] = useState("ข้อความที่ต้องการแก้ไข");
   const [isEditing, setIsEditing] = useState(false);
@@ -366,10 +369,10 @@ export default function Management() {
             <Typography variant="h5" className="mr-5">
               Management
             </Typography>
-            <div className="block md:hidden gap-5 w-[30%]">
+            <div className="block md:hidden gap-5 ">
               <Popover placement="bottom-end">
                 <PopoverHandler>
-                  <AdjustmentsHorizontalIcon className="w-6 cursor-pointer " />
+                  <AdjustmentsHorizontalIcon className="w-6 cursor-pointer" />
                 </PopoverHandler>
                 <PopoverContent className="flex flex-col gap-2 ">
                   <Select
@@ -414,7 +417,7 @@ export default function Management() {
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="hidden md:flex gap-5 w-[30%]">
+            <div className="hidden md:flex gap-5">
               <Select
                 label="Select Domitory"
                 onChange={(val) => {
@@ -550,9 +553,10 @@ export default function Management() {
                                           className="cursor-pointer"
                                         />
                                         <EditBuilding
-                                          data={dormData.idDormitory}
+                                          id={buildingData.idBuilding}
                                           open={isEditBuildOpen}
                                           handler={setIsEditBuildOpen}
+                                          rerender={setIsRerender}
                                         />
                                         <button
                                           onClick={() =>
@@ -665,7 +669,7 @@ export default function Management() {
                   </Card>
                 ))}
             </div>
-            <Card className="hidden xl:block p-5 rounded-md w-[30%] min-w-[450px] h-fit !static max-w-[520px]">
+            <Card className="hidden xl:block p-5 rounded-md w-[30%] min-w-[480px] h-fit !static max-w-[520px]">
               <div className="flex justify-between items-center">
                 <div className="flex gap-4 items-center ">
                   <Typography variant="h6" color="black">
