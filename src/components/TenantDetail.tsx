@@ -47,7 +47,7 @@ interface updateRoomInterface {
   parkingPrice: number;
 }
 
-export default function TenantDetail({ data }: { data: string }) {
+export default function TenantDetail({ data }: { data: string }, props: any) {
   const [openDelDialog, setOpenDelDialog] = useState(false);
   const handleOpenDelDialog = () => setOpenDelDialog(!openDelDialog);
 
@@ -138,6 +138,12 @@ export default function TenantDetail({ data }: { data: string }) {
 
   const check = () => {
     console.log(form);
+  };
+
+  const deleteRoom = async () => {
+    await apiClient(`${API}/Room/DeleteOneRoom/${data}`, {
+      method: "DELETE",
+    });
   };
 
   return (
@@ -258,7 +264,12 @@ export default function TenantDetail({ data }: { data: string }) {
         >
           Delete Room
         </Button>
-        <DeletePopup open={openDelDialog} handleDialog={handleOpenDelDialog} />
+        <DeletePopup
+          open={openDelDialog}
+          handler={handleOpenDelDialog}
+          del={deleteRoom()}
+          name="room"
+        />
         <div className="flex gap-2">
           <Button
             onClick={() => {

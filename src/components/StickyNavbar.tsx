@@ -13,6 +13,7 @@ import {
   IconButton,
 } from "@material-tailwind/react";
 
+import logo from "../img/logo1.png";
 import {
   UserCircleIcon,
   ChevronDownIcon,
@@ -28,6 +29,7 @@ import { getCurrentUser, getUserId } from "../services/userService";
 import AddDorm from "./Popup/AddDorm";
 import { API } from "../services/configAPI";
 import Notify from "./Popup/NotiButton";
+import { Link } from "react-router-dom";
 
 const profileMenuItems = [
   {
@@ -182,9 +184,9 @@ export function StickyNavbar() {
             as="li"
             className="px-0 lg:px-5 font-bold text-d hover:text-prim"
           >
-            <a href={li.path} className="flex items-center">
+            <Link to={li.path} className="flex items-center">
               {li.name}
-            </a>
+            </Link>
           </Typography>
         ))
       ) : (
@@ -195,21 +197,13 @@ export function StickyNavbar() {
 
   return (
     <Navbar className="sticky top-0 z-[100] h-max max-w-full rounded-none px-5 py-2 md:px-10 md:py-[9px] min-w-[540px] bg-a">
-      <div className="flex items-center justify-between text-d ">
+      <div className="flex items-center justify-between text-d">
         <div className="flex items-center">
-          <Typography
-            as="a"
-            href="#"
-            className="mr-4 cursor-pointer py-1.5 font-medium"
-          >
-            <BuildingOffice2Icon
-              onClick={() => {
-                window.location.href = "/";
-              }}
-              width={28}
-            />
-          </Typography>
-          <div className="mr-4 hidden lg:block">{navList}</div>
+          <Link to="/">
+            <img src={logo} width={40} />
+          </Link>
+
+          <div className="mx-4 hidden lg:block">{navList}</div>
         </div>
         <div className="flex items-center">
           {isAuth ? (
@@ -222,9 +216,7 @@ export function StickyNavbar() {
                 />
               </button>
               <AddDorm />
-
               <Notify />
-
               <ProfileMenu />
             </div>
           ) : (

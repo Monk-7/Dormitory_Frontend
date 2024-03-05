@@ -169,7 +169,7 @@ export default function Meter() {
     <div className="mx-5 md:mx-10 mt-5 mb-10 min-w-[500px]">
       <div className="flex justify-between items-center">
         <Typography variant="h5">Meter</Typography>
-        <div className="flex gap-5 w-[30%] gap-2">
+        <div className="flex gap-5">
           <Select
             onChange={(val) => {
               setSelectedDormitoryId(val);

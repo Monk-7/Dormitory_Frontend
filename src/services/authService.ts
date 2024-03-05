@@ -17,7 +17,6 @@ interface registerProp {
 }
 
 export const checkLogin = async () => {
-  const token: string = localStorage.getItem('token') || '';
   try {
     const res = await apiClient(`${API}/User/ValiDateToken`, {
       method: 'GET',

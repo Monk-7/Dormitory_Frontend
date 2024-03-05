@@ -120,7 +120,7 @@ export default function Invoice() {
       {/* <button onClick={check}>CHECK</button> */}
       <div className="flex justify-between items-center">
         <Typography variant="h5">Invoice</Typography>
-        <div className="flex gap-5 w-[30%] gap-2">
+        <div className="flex gap-5">
           <Select
             onChange={(val) => {
               setSelectedDormitoryId(val);

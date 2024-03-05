@@ -12,6 +12,7 @@ import React, { useState, useEffect } from "react";
 
 import apiClient from "../../services/apiClient";
 import { API } from "../../services/configAPI";
+import DeletePopup from "./DeletePopup";
 
 interface buildingInterface {
   idDormitory: string;
@@ -63,6 +64,16 @@ export default function EditBuilding(props: any) {
       [event.currentTarget.name]: event.currentTarget.value,
     });
   };
+
+  const deleteBuilding = async () => {
+    await apiClient(`${API}/Building/DeleteBuilding/${props.id}`, {
+      method: "DELETE",
+    });
+    props.rerender(true);
+  };
+
+  const [openDelDialog, setOpenDelDialog] = useState(false);
+  const handleOpenDelDialog = () => setOpenDelDialog(!openDelDialog);
 
   const sendDataAddBuildingAndRoom = async () => {
     const isFormFilledBuilding = Object.values(formBuilding).every(
@@ -186,7 +197,21 @@ export default function EditBuilding(props: any) {
           />
         </div>
       </DialogBody>
-      <DialogFooter className="p-2">
+      <DialogFooter className="p-2 gap-2">
+        <Button
+          variant="outlined"
+          color="red"
+          className="focus:shadow-none"
+          onClick={handleOpenDelDialog}
+        >
+          Delete Building
+        </Button>
+        <DeletePopup
+          open={openDelDialog}
+          handler={handleOpenDelDialog}
+          del={deleteBuilding}
+          name="Building"
+        />
         <Button
           variant="filled"
           className="bg-black"
