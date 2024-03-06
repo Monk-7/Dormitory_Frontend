@@ -1,5 +1,5 @@
 import AddBuilding from "../components/Popup/AddBuilding";
-import { FunnelIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { ArrowDownOnSquareIcon, ArrowUpOnSquareIcon, FunnelIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import {
   Button,
   Input,
@@ -15,6 +15,7 @@ import React, { useState, useEffect } from "react";
 import apiClient from "../services/apiClient";
 import { API } from "../services/configAPI";
 import { getUserId } from "../services/userService";
+import { saveAs } from 'file-saver';
 
 import jsonData from "../jsonTest/Meter.json";
 
@@ -79,6 +80,48 @@ export default function Meter() {
   const [inputValues, setInputValues] = useState<{
     [idMeterRoom: string]: { electricity: number; water: number };
   }>({});
+
+  const [files, setFiles] = useState();
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      setFiles(file);
+    } else {
+      alert(".xlsx File only");
+      setFiles(undefined);
+    }
+  };
+
+  const getImgProFile = async () => {
+    try {
+      const idUser = getUserId()
+      const res = await apiClient(`${API}/Meter/ExportFile/${idUser}`, {
+        responseType: "blob",
+        method: "GET",
+      });
+
+      const blob = new Blob([res.data]);
+      saveAs(blob, 'meter.xlsx');
+      
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const sendContractData = async () => {
+    const formData = new FormData();
+    formData.append(`file`, files);
+    try {
+      const res = await apiClient(`${API}/Meter/UploadFile`, {
+        method: "POST",
+        data: formData,
+      });
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleChangeMeter = (
     idMeterRoom: string,
@@ -233,23 +276,27 @@ export default function Meter() {
             </TabsHeader>
           </Tabs>
         </div>
-        <Button className="flex items-center rounded-md font-semibold bg-black/[.8] hover:bg-black text-white  shadow-2 hover:shadow-sm gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="h-5 w-5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
-            />
-          </svg>
-          Upload Files
+        <div className="flex gap-5">
+        <Button onClick={getImgProFile} variant="outlined" className="flex items-center rounded-md font-semibold gap-2">
+          <ArrowUpOnSquareIcon width={20}/>
+          Export File
         </Button>
+        <div>
+        <input
+          type="file"
+          className="sr-only"
+          id="inputImg"
+          onChange={handleFileChange} // ใส่โค้ดการจัดการเมื่อมีการเลือกไฟล์ที่เปลี่ยนแปลงที่นี่
+        />
+          <label
+            htmlFor="inputImg"
+            className="cursor-pointer py-3 px-7 rounded-md font-medium text-sm bg-black/[.8] hover:bg-black text-white flex items-center gap-2"
+          >
+            <ArrowDownOnSquareIcon width={20}/>
+            {files ? <span>File Ready</span> : <span>Import File</span>}
+          </label>
+          </div>            
+        </div>
       </div>
 
       {meterPrevData &&
@@ -356,7 +403,7 @@ export default function Meter() {
         ))}
       <div className="flex justify-end mt-5">
         <Button
-          onClick={handleSaveMeterData}
+          onClick={() => { files ? sendContractData() : handleSaveMeterData() }}
           className="flex items-center justify-center gap-2 bg-prim hover:bg-prim2 text-a px-8 text-[14px]"
         >
           <svg

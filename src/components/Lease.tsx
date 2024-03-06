@@ -76,11 +76,11 @@ export default function Lease({ data }: { data: string }) {
     <div>
       <div className="flex justify-between">
         <div className="w-20">
-          <Select label="Select Month">
+          {/* <Select label="Select Month">
             {month.map((m) => (
               <Option>{m}</Option>
             ))}
-          </Select>
+          </Select> */}
         </div>
         <input
           type="file"
@@ -90,7 +90,7 @@ export default function Lease({ data }: { data: string }) {
         />
         <label
           htmlFor="inputImg"
-          className="cursor-pointer py-1 px-3 rounded-md font-medium text-sm bg-black/[.8] hover:bg-black text-white flex items-center gap-2"
+          className="cursor-pointer py-3 px-5 rounded-md font-medium text-sm bg-black/[.8] hover:bg-black text-white flex items-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

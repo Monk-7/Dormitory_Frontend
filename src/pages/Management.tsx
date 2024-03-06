@@ -274,7 +274,7 @@ export default function Management() {
       const roomData = await getRoomStatusData(buildData);
       mergeData(dormitoryAPI, roomData);
       setIsRerender(false);
-      console.log("kuyjaw");
+      
     };
     getData();
   }, [dormitoryAPI, isRerender]);
@@ -479,6 +479,7 @@ export default function Management() {
                             <EditDorm
                               open={isEditDormOpen}
                               handler={setIsEditDormOpen}
+                              id={dormData.idDormitory}
                             />
                             {/* <button onClick={handleDelDormDialog}>
                               <TrashIcon width={22} />

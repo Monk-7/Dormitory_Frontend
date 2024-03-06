@@ -58,7 +58,7 @@ export default function App() {
         />
         <Route
           path="/edit-profile"
-          element={isAuth ? <EditProfile /> : <Navigate to="/login" />}
+          element={ <EditProfile />}
         />
       </Routes>
     </>

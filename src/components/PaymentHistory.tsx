@@ -165,11 +165,11 @@ export default function PaymentHistory({ data }: { data: string }) {
   return (
     <div>
       <div className="w-20">
-        <Select label="Select Year">
+        {/* <Select label="Select Year">
           {year.map((y) => (
             <Option>{y}</Option>
           ))}
-        </Select>
+        </Select> */}
       </div>
       {invoiceData && invoiceData.map((ivData,index) => (
         <Accordion

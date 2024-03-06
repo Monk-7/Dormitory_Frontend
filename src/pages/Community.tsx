@@ -80,24 +80,25 @@ export default function Community() {
     }
   };
 
-  const getDataPostAnnouncement = () => {
-    // const idUser = getUserId();
-    // if (idUser !== "") {
-    //   try {
-    //     const res = await apiClient(
-    //       `${API}/Community/GetPostApartment/${idUser}`,
-    //       {
-    //         method: "GET",
-    //       }
-    //     );
-    //     setPostData(res.data);
-    //     setCategoryPost('apartment');
-    //     //console.log(res.data);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
-    setPostData([]);
+  const getDataPostAnnouncement = async () => {
+    const idUser = getUserId();
+    if (idUser !== "") {
+      try {
+        const res = await apiClient(
+          `${API}/Community/GetPostAnnouncement/${idUser}`,
+          {
+            method: "GET",
+          }
+        );
+        setPostData(res.data);
+        setCategoryPost("announcement");
+        //console.log(res.data);
+      } catch (error) {
+        setPostData([]);
+        setCategoryPost("announcement");
+        console.log(error);
+      }
+    }
   };
 
   useEffect(() => {

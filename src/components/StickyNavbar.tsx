@@ -58,10 +58,14 @@ interface userInterface {
 }
 
 export function StickyNavbar() {
+  const [openDelDialog, setOpenDelDialog] = useState(false);
+  const handleOpenDelDialog = () => setOpenDelDialog(!openDelDialog);
   const [openNav, setOpenNav] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
   const [proFileUrl, setProFileUrl] = useState<string>();
   const [userData, setUserData] = useState<userInterface>();
+  const [isNotify, setIsNotify] = useState(false);
+
 
   const checkAuth = async () => {
     const checkAuthRes = await checkLogin();
@@ -70,6 +74,7 @@ export function StickyNavbar() {
       const data = getCurrentUser();
       setUserData(data);
       await getImgProFile(data.userID);
+      await getCheckNotify(data.userID);
     }
   };
 
@@ -95,6 +100,23 @@ export function StickyNavbar() {
       );
     }
   };
+  const getCheckNotify = async (idUser: string) => {
+    try {
+      const res = await apiClient(`${API}/Notify/GetLengthNotify/${idUser}`, {
+        method: "GET",
+      });
+
+      if(res.data.toString() != localStorage.getItem('NotifyLength'))
+      {
+        localStorage.setItem("isNotify", "true");
+        localStorage.setItem("NotifyLength", res.data);
+      }
+      
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 
   useEffect(() => {
     checkAuth();
@@ -208,15 +230,15 @@ export function StickyNavbar() {
         <div className="flex items-center">
           {isAuth ? (
             <div className="flex gap-5 items-center">
-              <button className="flex relative items-center">
+              <button className="flex relative items-center" onClick={handleOpenDelDialog}>
                 <BuildingOffice2Icon width={24} />
                 <PlusCircleIcon
                   width={20}
                   className="absolute right-[-5px] top-[-7px] text-white"
                 />
               </button>
-              <AddDorm />
-              <Notify />
+              <AddDorm  open={openDelDialog} handler={handleOpenDelDialog}/>
+              <Notify onClick={localStorage.setItem('isNotify',"false")} isNotify = {localStorage.getItem('isNotify')}/>
               <ProfileMenu />
             </div>
           ) : (

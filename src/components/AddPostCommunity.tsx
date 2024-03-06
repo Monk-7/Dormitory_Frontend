@@ -10,7 +10,7 @@ import {
 import apiClient from "../services/apiClient";
 import { useEffect, useState } from "react";
 import { API } from "../services/configAPI";
-import { getCurrentUser } from "../services/userService";
+import { getCurrentUser, getUserId } from "../services/userService";
 
 interface communityPostInterface {
   idUser: string;
@@ -74,6 +74,26 @@ export default function AddPostCommunity({ data }: { data: string }) {
         imageFormFiles.forEach((file) => {
           formData.append(`files`, file);
         });
+        if(form.category == "announcement")
+        {
+          try {
+            const idUser = getUserId();
+            const formA = {
+              idUser : idUser,
+              details : form.details
+            }
+            const res = await apiClient(
+              `${API}/Notify/CreateNotifyAnnouncement`,
+              {
+                method: "Post",
+                data : formA
+              }
+            );
+            
+          } catch (error) {
+            console.log(error);
+          }
+        }
         try {
           const resImg = await apiClient(
             `${API}/Community/updatePost/${res.data}`,
@@ -82,12 +102,12 @@ export default function AddPostCommunity({ data }: { data: string }) {
               data: formData,
             }
           );
-          console.log(resImg);
-          window.location.reload();
+          
+          // console.log(resImg);
         } catch (error) {
           console.log(error);
         }
-        console.log(res);
+        
       } catch (error) {
         console.log(error);
       }

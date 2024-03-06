@@ -50,11 +50,11 @@ export default function Report({ data }: { data: string }) {
   return (
     <div>
       <div className="w-20">
-        <Select label="Select Month">
+        {/* <Select label="Select Month">
           {month.map((m) => (
             <Option>{m}</Option>
           ))}
-        </Select>
+        </Select> */}
       </div>
       {problemData && problemData.map((problem) =>
       (
