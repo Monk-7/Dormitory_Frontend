@@ -13,7 +13,7 @@ import { getUserId } from "../../services/userService";
 import DeletePopup from "./DeletePopup";
 
 interface dormitoryInterface {
-  idUser: string;
+  dormitoryName: string;
   address: string;
   district: string;
   province: string;
@@ -26,7 +26,7 @@ export default function EditDorm(props: any) {
   const [openDelDialog, setOpenDelDialog] = useState(false);
   const handleOpenDelDialog = () => setOpenDelDialog(!openDelDialog);
   const [form, setForm] = useState<dormitoryInterface>({
-    idUser: "",
+    dormitoryName: "",
     address: "",
     district: "",
     province: "",
@@ -41,13 +41,25 @@ export default function EditDorm(props: any) {
     setForm({ ...form, [event.currentTarget.name]: event.currentTarget.value });
   };
 
+  const getDormData = async () => {
+    try {
+      
+      const res = await apiClient(`${API}/Dormitory/GetDetailDormitoryById/${props.id}`, {
+        method: "GET",
+      });
+      setForm(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const sendDataAddDormitory = async () => {
     const isFormFilled = Object.values(form).every((value) => value !== "");
     if (isFormFilled) {
       console.log(form);
       try {
-        const res = await apiClient(`${API}/Dormitory/CreateDormitory`, {
-          method: "POST",
+        const res = await apiClient(`${API}/Dormitory/EditDormitory/${props.id}`, {
+          method: "PUT",
           data: form,
         });
         console.log(res);
@@ -60,11 +72,15 @@ export default function EditDorm(props: any) {
     }
   };
 
+  const deleteDormitory= async () => {
+    await apiClient(`${API}/Dormitory/DeleteDormitory/${props.id}`, {
+      method: "DELETE",
+    });
+    //window.location.reload()
+  };
+
   useEffect(() => {
-    const idUser = getUserId();
-    if (idUser != "") {
-      setForm((prevForm) => ({ ...prevForm, idUser }));
-    }
+    getDormData();
   }, []);
 
   return (
@@ -83,6 +99,7 @@ export default function EditDorm(props: any) {
             onChange={changeDormitoryHandler}
             name="dormitoryName"
             label="Dormitory name"
+            value={form?.dormitoryName}
           />
         </div>
         <div className="my-5 flex items-center gap-5">
@@ -92,6 +109,7 @@ export default function EditDorm(props: any) {
             onChange={changeDormitoryHandler}
             name="address"
             label="Address"
+            value={form?.address}
           />
         </div>
         <div className="my-5 flex items-center gap-5">
@@ -101,6 +119,7 @@ export default function EditDorm(props: any) {
             onChange={changeDormitoryHandler}
             name="district"
             label="District"
+            value={form?.district}
           />
         </div>
         <div className="my-5 flex items-center gap-5">
@@ -110,6 +129,8 @@ export default function EditDorm(props: any) {
             onChange={changeDormitoryHandler}
             name="province"
             label="Province"
+            value={form?.province}
+
           />
         </div>
         <div className="my-5 flex items-center gap-5">
@@ -119,6 +140,8 @@ export default function EditDorm(props: any) {
             onChange={changeDormitoryHandler}
             name="postalCode"
             label="Postal Code"
+            value={form?.postalCode}
+
           />
         </div>
       </DialogBody>
@@ -132,6 +155,8 @@ export default function EditDorm(props: any) {
             onChange={changeDormitoryHandler}
             name="email"
             label="E-mail"
+            value={form?.email}
+
           />
         </div>
         <div className="my-5 flex items-center gap-5">
@@ -140,6 +165,7 @@ export default function EditDorm(props: any) {
             onChange={changeDormitoryHandler}
             name="phoneNumber"
             label="Phone No."
+            value={form?.phoneNumber}
           />
         </div>
       </DialogBody>
@@ -152,7 +178,7 @@ export default function EditDorm(props: any) {
         >
           Delete Dorm
         </Button>
-        <DeletePopup open={openDelDialog} handleDialog={handleOpenDelDialog} />
+        <DeletePopup open={openDelDialog} handler={handleOpenDelDialog} del={deleteDormitory} name="Dormitory" />
         <Button
           variant="filled"
           className="bg-black"

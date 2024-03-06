@@ -144,6 +144,7 @@ export default function TenantDetail({ data }: { data: string }, props: any) {
     await apiClient(`${API}/Room/DeleteOneRoom/${data}`, {
       method: "DELETE",
     });
+    window.location.reload();
   };
 
   return (
@@ -267,7 +268,7 @@ export default function TenantDetail({ data }: { data: string }, props: any) {
         <DeletePopup
           open={openDelDialog}
           handler={handleOpenDelDialog}
-          del={deleteRoom()}
+          del={deleteRoom}
           name="room"
         />
         <div className="flex gap-2">

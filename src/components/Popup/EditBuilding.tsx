@@ -14,55 +14,54 @@ import apiClient from "../../services/apiClient";
 import { API } from "../../services/configAPI";
 import DeletePopup from "./DeletePopup";
 
-interface buildingInterface {
-  idDormitory: string;
+interface buildingDetailInterface {
   buildingName: string;
   waterPrice: number;
   electricalPrice: number;
 }
 
-interface roomInterface {
-  roomNumberlength: number;
-  numberofFloor: number;
-  numberofRoom: number;
-  roomPrice: number;
-  furniturePrice: number;
-  internetPrice: number;
-  parkingPrice: number;
-}
-
 export default function EditBuilding(props: any) {
-  const [formBuilding, setFormBuilding] = useState<buildingInterface>({
-    idDormitory: "",
-    buildingName: "",
-    waterPrice: 0,
-    electricalPrice: 0,
+
+  const [form, setForm] = useState<buildingDetailInterface>({
+    buildingName : '',
+    waterPrice : 0,
+    electricalPrice : 0
   });
 
-  const [formRoom, setFormRoom] = useState<roomInterface>({
-    roomNumberlength: 3,
-    numberofFloor: 0,
-    numberofRoom: 0,
-    roomPrice: 0,
-    furniturePrice: 0,
-    internetPrice: 0,
-    parkingPrice: 0,
-  });
-
-  const changeBuildingHandler = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFormBuilding({
-      ...formBuilding,
-      [event.currentTarget.name]: event.currentTarget.value,
+  const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({
+      ...form, [event.currentTarget.name]: event.currentTarget.value,
     });
   };
 
-  const changeRoomHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFormRoom({
-      ...formRoom,
-      [event.currentTarget.name]: event.currentTarget.value,
-    });
+  const getData = async () => {
+    try {
+      const res = await apiClient(`${API}/Building/GetBuildingDetail/${props.id}`, {
+        method: "GET",
+      });
+      setForm(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const sendData = async () => {
+    const isFormFilled = Object.values(form).every((value) => value !== "");
+    if (isFormFilled) {
+      console.log(form);
+      try {
+        const res = await apiClient(`${API}/Building/EdotBuildingDetail/${props.id}`, {
+          method: "PUT",
+          data: form,
+        });
+        console.log(res);
+        // window.location.reload();
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      alert("กรุณากรอกข้อมูลให้ครบ");
+    }
   };
 
   const deleteBuilding = async () => {
@@ -75,50 +74,8 @@ export default function EditBuilding(props: any) {
   const [openDelDialog, setOpenDelDialog] = useState(false);
   const handleOpenDelDialog = () => setOpenDelDialog(!openDelDialog);
 
-  const sendDataAddBuildingAndRoom = async () => {
-    const isFormFilledBuilding = Object.values(formBuilding).every(
-      (value) => value !== ""
-    );
-    const isFormFilledRoom = Object.values(formRoom).every(
-      (value) => value !== ""
-    );
-    if (isFormFilledBuilding && isFormFilledRoom) {
-      console.log(formBuilding);
-      try {
-        const resBuilding = await apiClient(`${API}/Building/CreateBuilding`, {
-          method: "POST",
-          data: formBuilding,
-        });
-        const _formRoom = {
-          idBuilding: resBuilding.data,
-          roomNumberlength: formRoom.roomNumberlength,
-          numberofFloor: formRoom.numberofFloor,
-          numberofRoom: formRoom.numberofRoom,
-          roomPrice: formRoom.roomPrice,
-          furniturePrice: formRoom.furniturePrice,
-          internetPrice: 0,
-          parkingPrice: 0,
-        };
-        try {
-          const resRoom = await apiClient(`${API}/Room/CreateRoom`, {
-            method: "POST",
-            data: _formRoom,
-          });
-          console.log(resRoom);
-          window.location.reload();
-        } catch (error) {
-          console.log(error);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      alert("กรุณากรอกข้อมูลให้ครบ");
-    }
-  };
-
   useEffect(() => {
-    setFormBuilding((prevForm) => ({ ...prevForm, idDormitory: props.data }));
+    getData();
   }, []);
 
   return (
@@ -134,12 +91,13 @@ export default function EditBuilding(props: any) {
         <div className="my-6 flex items-center gap-5">
           <p className="w-[200px] text-black text-right">Building name</p>
           <Input
-            onChange={changeBuildingHandler}
+            onChange={changeHandler}
             name="buildingName"
             label="Building name"
+            value={form.buildingName}
           />
         </div>
-        <div className="my-6 flex items-center gap-5">
+        {/* <div className="my-6 flex items-center gap-5">
           <p className="w-[200px] text-black text-right">Number of floors</p>
           <Input
             disabled
@@ -158,13 +116,13 @@ export default function EditBuilding(props: any) {
             name="numberofRoom"
             label="Number of Rooms / Floor"
           />
-        </div>
+        </div> */}
       </DialogBody>
       <DialogHeader className="p-2">Room details</DialogHeader>
       <DialogBody className="p-2">
         <p>You can edit your room information.</p>
 
-        <div className="my-6 flex items-center gap-5">
+        {/* <div className="my-6 flex items-center gap-5">
           <p className="w-[200px] text-black text-right">Room Price</p>
           <Input
             onChange={changeRoomHandler}
@@ -179,21 +137,24 @@ export default function EditBuilding(props: any) {
             name="furniturePrice"
             label="Furniture Price"
           />
-        </div>
+        </div> */}
         <div className="my-6 flex items-center gap-5">
           <p className="w-[200px] text-black text-right">Electric Fee</p>
           <Input
-            onChange={changeBuildingHandler}
+            onChange={changeHandler}
             name="electricalPrice"
             label="Electric Fee"
+            value={form.electricalPrice}
+
           />
         </div>
         <div className="my-6 flex items-center gap-5">
           <p className="w-[200px] text-black text-right">Water Fee</p>
           <Input
-            onChange={changeBuildingHandler}
+            onChange={changeHandler}
             name="waterPrice"
             label="Water Fee"
+            value={form.waterPrice}
           />
         </div>
       </DialogBody>
@@ -215,7 +176,7 @@ export default function EditBuilding(props: any) {
         <Button
           variant="filled"
           className="bg-black"
-          onClick={sendDataAddBuildingAndRoom}
+          onClick={sendData}
         >
           <span>Continue</span>
         </Button>
