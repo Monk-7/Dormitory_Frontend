@@ -82,6 +82,18 @@ export default function Invoice() {
     }
   };
 
+  const sendData = async () =>{
+
+    try {
+      const id = getUserId();
+      const resInvoice = await apiClient(`${API}/Invoice/SendInvoice/${id}`, {
+        method: "PUT",
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     getDataInvoice();
   }, []);
@@ -349,7 +361,8 @@ export default function Invoice() {
       <div className="flex justify-end mt-5">
         <Button
           onClick={() => {
-            alert("ส่งใบแจ้งหนี้สำเร็จ");
+
+            sendData();
           }}
           className="flex items-center justify-center gap-2 bg-prim hover:bg-prim2 text-a px-8 text-[14px]"
         >
